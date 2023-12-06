@@ -56,5 +56,13 @@ class EmehcsTest < Minitest::Test
                  (emehcs.parse_run [], code14)
 
     assert_equal 66, (emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)'))
+    code16 = emehcs.parse2 <<-TEXT
+    ( これはコメントです。 )=
+    ((=out =x
+      (((x 3x+1) (out x cons) collatz)
+       ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
+     >collatz 5 [] collatz)
+    TEXT
+    assert_equal [1, 2, 4, 8, 16, 5, :q], (emehcs.parse_run [], code16)
   end
 end

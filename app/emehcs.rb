@@ -95,7 +95,8 @@ class Emehcs < EmehcsBase
   def reset_env = (@env = {})
 
   # 文字列code から 配列code へ変換
-  def parse2(str) = parse2_sub str.gsub('(', '( ').gsub(')', ' )').split(' '), []
+  def parse2(str) =
+    parse2_sub str.gsub(/\(.*\)=/, '').gsub('[', '(').gsub(']', ':q)').gsub('(', '( ').gsub(')', ' )').split(' '), []
 
   private
 
@@ -150,6 +151,8 @@ class Emehcs < EmehcsBase
       else
         if /\A[-+]?\d+\z/ =~ x
           parse2_sub xs, acc + [x.to_i] # 数値
+        elsif x == ':q'
+          parse2_sub xs, acc + [:q]
         else
           parse2_sub xs, acc + [x]
         end
@@ -158,13 +161,12 @@ class Emehcs < EmehcsBase
   end
 end
 
-# code14 = [['=out', '=x', '=stop',
-#            [['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
-#             ['stop', ['x', 1, '+'], ['out', 'fizz:q', 'cons'], 'fizz'],
-#             ['x', '0mod3?']], 'out', ['stop', 'x', '<']],
-#           '>fizz', 30, 1, [:q], 'fizz']
-# emehcs = Emehcs.new
-# p emehcs.parse_run [], code14
-
 emehcs = Emehcs.new
-p emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)')
+z = emehcs.parse2 <<TEXT
+  ( これはコメントです。 )=
+  ((=out =x
+    (((x 3x+1) (out x cons) collatz)
+     ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
+   >collatz 5 [] collatz)
+TEXT
+p emehcs.parse_run [], z
