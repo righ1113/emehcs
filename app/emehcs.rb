@@ -10,6 +10,8 @@
 # $ cd emehcs
 # $ bundle exec ruby app/emehcs.rb
 
+require './lib/repl'
+
 # EmehcsBase クラス
 class EmehcsBase
   def initialize
@@ -92,6 +94,8 @@ class Emehcs < EmehcsBase
     end
   end
 
+  def run(str_code) = parse_run [], (parse2 str_code)
+
   def reset_env = (@env = {})
 
   # 文字列code から 配列code へ変換
@@ -162,11 +166,13 @@ class Emehcs < EmehcsBase
 end
 
 emehcs = Emehcs.new
-z = emehcs.parse2 <<TEXT
-  ( これはコメントです。 )=
-  ((=out =x
-    (((x 3x+1) (out x cons) collatz)
-     ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
-   >collatz 5 [] collatz)
-TEXT
-p emehcs.parse_run [], z
+# z = emehcs.parse2 <<TEXT
+#   ( これはコメントです。 )=
+#   ((=out =x
+#     (((x 3x+1) (out x cons) collatz)
+#      ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
+#    >collatz 5 [] collatz)
+# TEXT
+# p emehcs.parse_run [], z
+repl = Repl.new emehcs
+repl.repl
