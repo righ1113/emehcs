@@ -94,6 +94,9 @@ class Emehcs < EmehcsBase
 
   def reset_env = (@env = {})
 
+  # 文字列code から 配列code へ変換
+  def parse2(str) = parse2_sub str.gsub('(', '( ').gsub(')', ' )').split(' '), []
+
   private
 
   def parse_string(stack, x, em)
@@ -135,12 +138,33 @@ class Emehcs < EmehcsBase
   # ① Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(stack, x, em) =
     (em.empty? && x.last != :q ? stack.push(parse_run(stack, x)) : (stack.push(x); stack))
+
+  # 文字列code から 配列code へ変換
+  def parse2_sub(data, acc)
+    case data
+    in [] then acc
+    in [x, *xs]
+      case x
+      in '(' then xs2, acc2 = parse2_sub(xs, []); parse2_sub(xs2, acc + [acc2])
+      in ')' then [xs, acc]
+      else
+        if /\A[-+]?\d+\z/ =~ x
+          parse2_sub xs, acc + [x.to_i] # 数値
+        else
+          parse2_sub xs, acc + [x]
+        end
+      end
+    end
+  end
 end
 
-code14 = [['=out', '=x', '=stop',
-           [['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
-            ['stop', ['x', 1, '+'], ['out', 'fizz:q', 'cons'], 'fizz'],
-            ['x', '0mod3?']], 'out', ['stop', 'x', '<']],
-          '>fizz', 30, 1, [:q], 'fizz']
+# code14 = [['=out', '=x', '=stop',
+#            [['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
+#             ['stop', ['x', 1, '+'], ['out', 'fizz:q', 'cons'], 'fizz'],
+#             ['x', '0mod3?']], 'out', ['stop', 'x', '<']],
+#           '>fizz', 30, 1, [:q], 'fizz']
+# emehcs = Emehcs.new
+# p emehcs.parse_run [], code14
+
 emehcs = Emehcs.new
-p emehcs.parse_run [], code14
+p emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)')

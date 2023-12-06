@@ -54,5 +54,7 @@ class EmehcsTest < Minitest::Test
     assert_equal ['fizz:q', 29, 28, 'fizz:q', 26, 25, 'fizz:q', 23, 22, 'fizz:q', 20, 19,
                   'fizz:q', 17, 16, 'fizz:q', 14, 13, 'fizz:q', 11, 10, 'fizz:q', 8, 7, 'fizz:q', 5, 4, 'fizz:q', 2, 1, :q],
                  (emehcs.parse_run [], code14)
+
+    assert_equal 66, (emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)'))
   end
 end
