@@ -10,6 +10,7 @@
 # $ cd emehcs
 # $ bundle exec ruby app/emehcs.rb
 
+require './lib/parse2_core'
 require './lib/repl'
 
 # EmehcsBase クラス
@@ -72,6 +73,8 @@ end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
 class Emehcs < EmehcsBase
+  include Parse2Core
+
   # メインルーチン
   def parse_run(stack, code)
     case code
@@ -99,8 +102,7 @@ class Emehcs < EmehcsBase
   def reset_env = (@env = {})
 
   # 文字列code から 配列code へ変換
-  def parse2(str) =
-    parse2_sub str.gsub(/\(.*\)=/, '').gsub('[', '(').gsub(']', ':q)').gsub('(', '( ').gsub(')', ' )').split(' '), []
+  def parse2(str) = parse2_core str
 
   private
 
@@ -143,26 +145,6 @@ class Emehcs < EmehcsBase
   # ① Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(stack, x, em) =
     (em.empty? && x.last != :q ? stack.push(parse_run(stack, x)) : (stack.push(x); stack))
-
-  # 文字列code から 配列code へ変換
-  def parse2_sub(data, acc)
-    case data
-    in [] then acc
-    in [x, *xs]
-      case x
-      in '(' then xs2, acc2 = parse2_sub(xs, []); parse2_sub(xs2, acc + [acc2])
-      in ')' then [xs, acc]
-      else
-        if /\A[-+]?\d+\z/ =~ x
-          parse2_sub xs, acc + [x.to_i] # 数値
-        elsif x == ':q'
-          parse2_sub xs, acc + [:q]
-        else
-          parse2_sub xs, acc + [x]
-        end
-      end
-    end
-  end
 end
 
 emehcs = Emehcs.new
