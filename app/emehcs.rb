@@ -111,11 +111,11 @@ class Emehcs < EmehcsBase
     elsif x == '<'      then stack = lt stack
     elsif x == 'true'   then stack = my_true stack
     elsif x == 'false'  then stack = my_false stack
-    elsif x == 'even?'  then (p 'even'; stack = even stack)
-    elsif x == 'x/2'    then (p 'div2'; stack = div2 stack)
-    elsif x == '3x+1'   then (p '3x+1'; stack = mul3 stack)
-    elsif x == 'cons'   then (p 'cons'; stack = cons stack)
-    elsif x == '0mod3?' then (p 'mod3'; stack = mod3 stack)
+    elsif x == 'even?'  then stack = even stack
+    elsif x == 'x/2'    then stack = div2 stack
+    elsif x == '3x+1'   then stack = mul3 stack
+    elsif x == 'cons'   then stack = cons stack
+    elsif x == '0mod3?' then stack = mod3 stack
     elsif x[-2..] == ':q' # 純粋文字列
       stack.push x
     elsif x[0] == '>' # 関数定義
@@ -166,13 +166,5 @@ class Emehcs < EmehcsBase
 end
 
 emehcs = Emehcs.new
-# z = emehcs.parse2 <<TEXT
-#   ( これはコメントです。 )=
-#   ((=out =x
-#     (((x 3x+1) (out x cons) collatz)
-#      ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
-#    >collatz 5 [] collatz)
-# TEXT
-# p emehcs.parse_run [], z
 repl = Repl.new emehcs
 repl.repl

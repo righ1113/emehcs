@@ -33,3 +33,6 @@ Style/WordArray:
 
 Layout/LineLength:
   Max: 124
+
+Style/SpecialGlobalVars:
+  Enabled: false

@@ -16,14 +16,24 @@ class Repl
       prompt = input.chomp
       break if prompt == 'exit'
 
-      print @emehcs_obj.run(prompt)
-      print "\n"
-      # puts prompt
+      if prompt[0..7] == 'loadFile'
+        f = File.open(prompt[9..], 'r')
+        codes = f.read.split('|')
+        f.close
+        codes.each do |c|
+          print @emehcs_obj.run(c)
+          print "\n"
+        end
+      else
+        print @emehcs_obj.run(prompt)
+        print "\n"
+        # puts prompt
+      end
     rescue Interrupt
       puts "\nBye!"
       break
     rescue StandardError # rescue Exception
-      puts "Error: #{$ERROR_INFO}" # puts "Error: #{$!}"
+      puts "Error: #{$!}"
     end
   end
 end
