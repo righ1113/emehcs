@@ -118,7 +118,7 @@ class Emehcs < EmehcsBase
     elsif x == '3x+1'   then stack = mul3 stack
     elsif x == 'cons'   then stack = cons stack
     elsif x == '0mod3?' then stack = mod3 stack
-    elsif x[-2..] == ':q' # 純粋文字列
+    elsif x[-2..] == ':s' # 純粋文字列
       stack.push x
     elsif x[0] == '>' # 関数定義
       @env[x[1..]] = stack.pop
