@@ -1,0 +1,5 @@
+これはダミーファイルです。この dataフォルダ に REPL のヒストリーが保存されます。
+
+■ヒストリーの例
+(4649 ())
+loadFile ./sample/col_fizz.eme
