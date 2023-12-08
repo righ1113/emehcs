@@ -4,8 +4,15 @@ require 'readline'
 
 # Repl クラス
 class Repl
+  READLINE_HIST_FILE = './data/.readline_history'
+
   def initialize(obj)
     @emehcs_obj = obj
+    return unless File.exist? READLINE_HIST_FILE
+
+    File.open(READLINE_HIST_FILE).readlines.each do |d|
+      Readline::HISTORY.push d
+    end
   end
 
   def repl
@@ -31,6 +38,9 @@ class Repl
       end
     rescue Interrupt
       puts "\nBye!"
+      File.open(READLINE_HIST_FILE, 'w') do |f2|
+        Readline::HISTORY.each { |s| f2.puts s }
+      end
       break
     rescue StandardError # rescue Exception
       puts "Error: #{$!}"
