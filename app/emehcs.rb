@@ -46,6 +46,7 @@ class EmehcsBase
   def mod3(stack)  = (stack2, y1     = common1 stack; stack2.push((y1 % 3).zero? ? 'true' : 'false'); stack2)
   def mod5(stack)  = (stack2, y1     = common1 stack; stack2.push((y1 % 5).zero? ? 'true' : 'false'); stack2)
   def s_append(stack) = (stack2, y1, y2 = common2 stack; stack2.push y1[0..-3] + y2; stack2)
+  def my_sample(stack) = (stack2, y1    = common1 stack; stack2.push y1[0..-2].sample; stack2)
 
   def lt(stack)
     stack2, y1, y2 = common2 stack
@@ -72,11 +73,7 @@ class EmehcsBase
     stack
   end
 
-  def cons(stack)
-    y1 = stack.pop; y2 = stack.pop # 2コ 取り出す
-    stack.push y2.unshift(y1)
-    stack
-  end
+  def cons(stack) = (stack2, y1, y2 = common2 stack; stack2.push y2.unshift(y1); stack2)
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -129,6 +126,7 @@ class Emehcs < EmehcsBase
     elsif x == '0mod3?' then stack = mod3 stack
     elsif x == '0mod5?' then stack = mod5 stack
     elsif x == 's.++'   then stack = s_append stack
+    elsif x == 'sample' then stack = my_sample stack
     elsif x[-2..] == ':s' # 純粋文字列
       stack.push x
     elsif x[0] == '>' # 関数定義

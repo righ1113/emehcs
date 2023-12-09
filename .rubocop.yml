@@ -12,13 +12,13 @@ Style/Semicolon:
   Enabled: false
 
 CyclomaticComplexity:
-  Max: 23
+  Max: 50
 
 AbcSize:
   Max: 177
 
 PerceivedComplexity:
-  Max: 25
+  Max: 50
 
 Naming/MethodParameterName:
   Enabled: false

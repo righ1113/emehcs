@@ -1,0 +1,7 @@
+; > loadFile ./sample/zdk.eme
+
+(=out =x ([doko:s zun:s] sample) >which
+  ((x 1 +) (out zun:s  cons) zdk)
+  ((0      (out doko:s cons) zdk) ((out doko:s cons) ki-yo-shi!:s cons) (3 x <)) (which doko:s ==)) >zdk |
+
+0 [] zdk
