@@ -22,16 +22,22 @@ class EmehcsTest < Minitest::Test
     code11 = [[1, 2, 3, :q], 'id']
     code12 = [[1, 2, 3, :q], '=dat', 'dat', 'id']
     # 再帰のときに、後の引数の計算(左)で、先の引数を使ってはいけない
-    code13 = [['=out', '=x',
-               [[['x', '3x+1'], ['out', 'x', 'cons'], 'collatz'],
-                [['x', 'x/2'],  ['out', 'x', 'cons'], 'collatz'],
-                ['x', 'even?']], '>sub', 'sub', 'out', ['x', 2, '<']],
-              '>collatz', 5, [:q], 'collatz']
-    code14 = [['=out', '=x', '=stop',
-               [['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
-                ['stop', ['x', 1, '+'], ['out', 'fizz:q', 'cons'], 'fizz'],
-                ['x', '0mod3?']], 'out', ['stop', 'x', '<']],
-              '>fizz', 30, 1, [:q], 'fizz']
+    code13 = [
+      ['=out', '=x', [
+        [['x', '3x+1'], ['out', 'x', 'cons'], 'collatz'],
+        [['x', 'x/2'], ['out', 'x', 'cons'], 'collatz'],
+        ['x', 'even?']
+      ], '>sub', 'sub', 'out', ['x', 2, '<']],
+      '>collatz', 5, [:q], 'collatz'
+    ]
+    code14 = [
+      ['=out', '=x', '=stop', [
+        ['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
+        ['stop', ['x', 1, '+'], ['out', 'fizz:s', 'cons'], 'fizz'],
+        ['x', '0mod3?']
+      ], 'out', ['stop', 'x', '<']],
+      '>fizz', 30, 1, [:q], 'fizz'
+    ]
 
     emehcs = Emehcs.new
     assert_equal 3,   (emehcs.parse_run [], code1)
@@ -51,17 +57,22 @@ class EmehcsTest < Minitest::Test
     assert_equal [1, 2, 3, :q],        (emehcs.parse_run [], code11)
     assert_equal [1, 2, 3, :q],        (emehcs.parse_run [], code12)
     assert_equal [2, 4, 8, 16, 5, :q], (emehcs.parse_run [], code13)
-    assert_equal ['fizz:q', 29, 28, 'fizz:q', 26, 25, 'fizz:q', 23, 22, 'fizz:q', 20, 19,
-                  'fizz:q', 17, 16, 'fizz:q', 14, 13, 'fizz:q', 11, 10, 'fizz:q', 8, 7, 'fizz:q', 5, 4, 'fizz:q', 2, 1, :q],
-                 (emehcs.parse_run [], code14)
+    assert_equal(
+      [
+        'fizz:s', 29, 28, 'fizz:s', 26, 25, 'fizz:s', 23, 22, 'fizz:s', 20, 19,
+        'fizz:s', 17, 16, 'fizz:s', 14, 13, 'fizz:s', 11, 10, 'fizz:s', 8, 7, 'fizz:s', 5, 4, 'fizz:s', 2, 1, :q
+      ],
+      (emehcs.parse_run [], code14)
+    )
 
     assert_equal 66, (emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)'))
-    code16 = emehcs.parse2 <<-TEXT
-    ( これはコメントです。 )=
-    ((=out =x
-      (((x 3x+1) (out x cons) collatz)
-       ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <))
-     >collatz 5 [] collatz)
+    code16 = emehcs.parse2 <<~TEXT
+      ; これはコメントです。
+      (
+        (=out =x (
+          ((x 3x+1) (out x cons) collatz)
+          ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <)) >collatz
+        5 [] collatz)
     TEXT
     assert_equal [1, 2, 4, 8, 16, 5, :q], (emehcs.parse_run [], code16)
   end
