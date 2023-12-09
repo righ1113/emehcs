@@ -25,15 +25,15 @@ class EmehcsBase
 
   def common1(stack)
     y1 = stack.pop
-    y1_ret = y1.is_a?(Array) ? parse_run(stack, y1) : y1
+    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(stack, y1) : y1
     [stack, y1_ret]
   end
 
   def common2(stack)
     y1 = stack.pop
-    y1_ret = y1.is_a?(Array) ? parse_run(stack, y1) : y1
+    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(stack, y1) : y1
     y2 = stack.pop
-    y2_ret = y2.is_a?(Array) ? parse_run(stack, y2) : y2
+    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(stack, y2) : y2
     [stack, y1_ret, y2_ret]
   end
 
@@ -44,10 +44,18 @@ class EmehcsBase
   def div2(stack)  = (stack2, y1     = common1 stack; stack2.push y1 / 2;  stack2)
   def mul3(stack)  = (stack2, y1     = common1 stack; stack2.push y1 * 3 + 1; stack2)
   def mod3(stack)  = (stack2, y1     = common1 stack; stack2.push((y1 % 3).zero? ? 'true' : 'false'); stack2)
+  def mod5(stack)  = (stack2, y1     = common1 stack; stack2.push((y1 % 5).zero? ? 'true' : 'false'); stack2)
+  def s_append(stack) = (stack2, y1, y2 = common2 stack; stack2.push y1[0..-3] + y2; stack2)
 
   def lt(stack)
     stack2, y1, y2 = common2 stack
     stack2.push(y2 < y1 ? 'true' : 'false')
+    stack2
+  end
+
+  def eq(stack)
+    stack2, y1, y2 = common2 stack
+    stack2.push(y2 == y1 ? 'true' : 'false')
     stack2
   end
 
@@ -111,6 +119,7 @@ class Emehcs < EmehcsBase
     elsif x == '-'      then stack = minus stack
     elsif x == '*'      then stack = mul stack
     elsif x == '<'      then stack = lt stack
+    elsif x == '=='     then stack = eq stack
     elsif x == 'true'   then stack = my_true stack
     elsif x == 'false'  then stack = my_false stack
     elsif x == 'even?'  then stack = even stack
@@ -118,6 +127,8 @@ class Emehcs < EmehcsBase
     elsif x == '3x+1'   then stack = mul3 stack
     elsif x == 'cons'   then stack = cons stack
     elsif x == '0mod3?' then stack = mod3 stack
+    elsif x == '0mod5?' then stack = mod5 stack
+    elsif x == 's.++'   then stack = s_append stack
     elsif x[-2..] == ':s' # 純粋文字列
       stack.push x
     elsif x[0] == '>' # 関数定義
