@@ -28,21 +28,20 @@ class Repl
         codes = f.read.split('|')
         f.close
         codes.each do |c|
-          print @emehcs_obj.run(c)
-          print "\n"
+          s = @emehcs_obj.run(c).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+          puts s
         end
       else
-        print @emehcs_obj.run(prompt)
-        print "\n"
-        # puts prompt
+        s = @emehcs_obj.run(prompt).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+        puts s
       end
     rescue Interrupt
       puts "\nBye!"
       File.open(READLINE_HIST_FILE, 'w') do |f2|
-        Readline::HISTORY.each { |s| f2.puts s }
+        Readline::HISTORY.each { f2.puts _1 }
       end
       break
-    rescue StandardError # rescue Exception
+    rescue StandardError
       puts "Error: #{$!}"
     end
   end
