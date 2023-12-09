@@ -1,4 +1,4 @@
-( > loadFile ./sample/col_fizz.eme )=
+; > loadFile ./sample/col_fizz.eme
 
 ((=out =x (
   ((x 3x+1) (out x cons) collatz)

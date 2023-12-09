@@ -11,7 +11,7 @@ class Repl
     return unless File.exist? READLINE_HIST_FILE
 
     File.open(READLINE_HIST_FILE).readlines.each do |d|
-      Readline::HISTORY.push d
+      Readline::HISTORY.push d.chomp
     end
   end
 

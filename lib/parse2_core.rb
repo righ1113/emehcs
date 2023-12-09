@@ -5,7 +5,7 @@ module Parse2Core
   private
 
   def parse2_core(str) =
-    parse2_sub str.gsub(/\(.*\)=/, '').gsub('[', '(').gsub(']', ':q)').gsub('(', '( ').gsub(')', ' )').split(' '), []
+    parse2_sub str.gsub(/;.*/, '').gsub('[', '(').gsub(']', ':q)').gsub('(', '( ').gsub(')', ' )').split(' '), []
 
   # 文字列code から 配列code へ変換
   def parse2_sub(data, acc)
