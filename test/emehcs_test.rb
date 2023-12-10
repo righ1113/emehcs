@@ -40,32 +40,32 @@ class EmehcsTest < Minitest::Test
     ]
 
     emehcs = Emehcs.new
-    assert_equal 3,   (emehcs.parse_run [], code1)
-    assert_equal 11,  (emehcs.parse_run [], code2)
-    assert_equal 12,  (emehcs.parse_run [], code3)
-    assert_equal 99,  (emehcs.parse_run [], code4)
-    assert_equal 9,   (emehcs.parse_run [], code5)
-    assert_equal 4,   (emehcs.parse_run [], code6)
-    assert_equal 5,   (emehcs.parse_run [], code7)
-    assert_equal 1,   (emehcs.parse_run [], code8)
-    assert_equal 24,  (emehcs.parse_run [], code9)
-    assert_equal 120, (emehcs.parse_run [], code10)
+    assert_equal 3,   (emehcs.parse_run code1)
+    assert_equal 11,  (emehcs.parse_run code2)
+    assert_equal 12,  (emehcs.parse_run code3)
+    assert_equal 99,  (emehcs.parse_run code4)
+    assert_equal 9,   (emehcs.parse_run code5)
+    assert_equal 4,   (emehcs.parse_run code6)
+    assert_equal 5,   (emehcs.parse_run code7)
+    assert_equal 1,   (emehcs.parse_run code8)
+    assert_equal 24,  (emehcs.parse_run code9)
+    assert_equal 120, (emehcs.parse_run code10)
 
     # emehcs.reset_env
     # assert_equal 120, (emehcs.parse_run [], code10)
 
-    assert_equal [1, 2, 3, :q],        (emehcs.parse_run [], code11)
-    assert_equal [1, 2, 3, :q],        (emehcs.parse_run [], code12)
-    assert_equal [2, 4, 8, 16, 5, :q], (emehcs.parse_run [], code13)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code11)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code12)
+    assert_equal [2, 4, 8, 16, 5, :q], (emehcs.parse_run code13)
     assert_equal(
       [
         'fizz:s', 29, 28, 'fizz:s', 26, 25, 'fizz:s', 23, 22, 'fizz:s', 20, 19,
         'fizz:s', 17, 16, 'fizz:s', 14, 13, 'fizz:s', 11, 10, 'fizz:s', 8, 7, 'fizz:s', 5, 4, 'fizz:s', 2, 1, :q
       ],
-      (emehcs.parse_run [], code14)
+      (emehcs.parse_run code14)
     )
 
-    assert_equal 66, (emehcs.parse_run [], (emehcs.parse2 '((=x x) >id (=x x) >id2 66 id)'))
+    assert_equal 66, emehcs.parse_run(emehcs.parse2('((=x x) >id (=x x) >id2 66 id)'))
     code16 = emehcs.parse2 <<~TEXT
       ; これはコメントです。
       (
@@ -74,6 +74,6 @@ class EmehcsTest < Minitest::Test
           ((x x/2)  (out x cons) collatz) (x even?)) (out 1 cons) (x 2 <)) >collatz
         5 [] collatz)
     TEXT
-    assert_equal [1, 2, 4, 8, 16, 5, :q], (emehcs.parse_run [], code16)
+    assert_equal [1, 2, 4, 8, 16, 5, :q], (emehcs.parse_run code16)
   end
 end
