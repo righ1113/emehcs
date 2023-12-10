@@ -47,6 +47,9 @@ class EmehcsBase
   def mod5      = (y1     = common1; @stack.push((y1 % 5).zero? ? 'true' : 'false'))
   def s_append  = (y1, y2 = common2; @stack.push y1[0..-3] + y2)
   def my_sample = (y1     = common1; @stack.push y1[0..-2].sample)
+  def error     = (y1     = common1; @stack.push raise y1.to_s)
+  def car       = (y1     = common1; z = y1[0..-2]; @stack.push z[0])
+  def cdr       = (y1     = common1; @stack.push y1[1..])
 
   def lt
     y1, y2 = common2
@@ -127,6 +130,9 @@ class Emehcs < EmehcsBase
     elsif x == '0mod5?' then mod5
     elsif x == 's.++'   then s_append
     elsif x == 'sample' then my_sample
+    elsif x == 'error'  then error
+    elsif x == 'car'    then car
+    elsif x == 'cdr'    then cdr
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
     elsif x[0] == '>' # 関数定義
