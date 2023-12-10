@@ -61,11 +61,15 @@ class EmehcsBase
   # ④ true/false でも :q チェック
   def my_true
     y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
     y1.is_a?(Array) && y1.last != :q ? @stack.push(parse_run(y1)) : @stack.push(y1)
   end
 
   def my_false
     y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
     y2.is_a?(Array) && y2.last != :q ? @stack.push(parse_run(y2)) : @stack.push(y2)
   end
 
