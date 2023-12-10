@@ -93,7 +93,7 @@ class Emehcs < EmehcsBase
       else raise '予期しない型'
       end
       l = stack2.last
-      if l.is_a?(String) && %w[true false].include?(l)
+      if l.is_a?(String) && %w[true false].include?(l) && !stack2[1..].empty?
         stack2.pop
         parse_run stack2, xs.unshift(l) # true/false が積まれたら、もう一回実行する
       else
