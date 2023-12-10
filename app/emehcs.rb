@@ -157,10 +157,10 @@ class Emehcs < EmehcsBase
   end
 
   # ① Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) =
-    (em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
+  def parse_array(x, em) = (em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
 end
 
 emehcs = Emehcs.new
 repl = Repl.new emehcs
+repl.prelude
 repl.repl

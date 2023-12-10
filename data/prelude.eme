@@ -1,0 +1,3 @@
+(=out =inp ((inp cdr) (out (inp car) cons) reverse) out ([] inp ==)) >reverse  |
+
+; (>f =out =inp ((inp car) f) =ret ((inp cdr) (out ret cons) f map) (out [] reverse) ([] inp ==)) >map

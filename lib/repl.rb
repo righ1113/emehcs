@@ -5,6 +5,7 @@ require 'readline'
 # Repl クラス
 class Repl
   READLINE_HIST_FILE = './data/.readline_history'
+  PRELUDE_FILE       = './data/prelude.eme'
 
   def initialize(obj)
     @emehcs_obj = obj
@@ -12,6 +13,18 @@ class Repl
 
     File.open(READLINE_HIST_FILE).readlines.each do |d|
       Readline::HISTORY.push d.chomp
+    end
+  end
+
+  def prelude
+    return unless File.exist? PRELUDE_FILE
+
+    f = File.open(PRELUDE_FILE, 'r')
+    codes = f.read.split('|')
+    f.close
+    codes.each do |c|
+      @emehcs_obj.run(c).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+      # puts s
     end
   end
 
