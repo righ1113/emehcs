@@ -1,25 +1,23 @@
 # frozen_string_literal: true
 
 require 'readline'
+require './lib/const'
 
 # Repl クラス
 class Repl
-  READLINE_HIST_FILE = './data/.readline_history'
-  PRELUDE_FILE       = './data/prelude.eme'
-
   def initialize(obj)
     @emehcs_obj = obj
-    return unless File.exist? READLINE_HIST_FILE
+    return unless File.exist? Const::READLINE_HIST_FILE
 
-    File.open(READLINE_HIST_FILE).readlines.each do |d|
+    File.open(Const::READLINE_HIST_FILE).readlines.each do |d|
       Readline::HISTORY.push d.chomp
     end
   end
 
   def prelude
-    (puts 'no prelude.'; return) unless File.exist? PRELUDE_FILE
+    (puts 'no prelude.'; return) unless File.exist? Const::PRELUDE_FILE
 
-    f = File.open(PRELUDE_FILE, 'r')
+    f = File.open(Const::PRELUDE_FILE, 'r')
     codes = f.read.split('|')
     f.close
     codes.each do |c|
@@ -29,6 +27,7 @@ class Repl
   end
 
   def repl
+    puts Const::EMEHCS_VERSION
     loop do
       input = Readline.readline(prompt = 'emehcs> ', add_hist = true)
       raise Interrupt if input.nil?
@@ -50,7 +49,7 @@ class Repl
       end
     rescue Interrupt
       puts "\nBye!"
-      File.open(READLINE_HIST_FILE, 'w') do |f2|
+      File.open(Const::READLINE_HIST_FILE, 'w') do |f2|
         Readline::HISTORY.each { f2.puts _1 }
       end
       break
