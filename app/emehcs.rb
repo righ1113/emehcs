@@ -10,6 +10,7 @@
 # $ cd emehcs
 # $ bundle exec ruby app/emehcs.rb
 
+require './lib/const'
 require './lib/parse2_core'
 require './lib/repl'
 
@@ -81,6 +82,7 @@ end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
 class Emehcs < EmehcsBase
+  include Const
   include Parse2Core
 
   # メインルーチン
@@ -146,9 +148,9 @@ class Emehcs < EmehcsBase
       # p "arra: #{x} #{@arr_flg} #{em}"
       # ② name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
       if em.empty? && @env[x].last != :q
-        @stack.push parse_run @env[x]
+        @stack.push parse_run Const.deep_copy(@env[x])
       else
-        @stack.push @env[x]
+        @stack.push           Const.deep_copy(@env[x])
       end
     else
       # p "norm: #{x} #{@env[x]}"

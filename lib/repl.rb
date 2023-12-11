@@ -17,7 +17,7 @@ class Repl
   end
 
   def prelude
-    return unless File.exist? PRELUDE_FILE
+    (puts 'no prelude.'; return) unless File.exist? PRELUDE_FILE
 
     f = File.open(PRELUDE_FILE, 'r')
     codes = f.read.split('|')
