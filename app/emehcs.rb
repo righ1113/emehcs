@@ -98,7 +98,7 @@ class Emehcs < EmehcsBase
       else raise '予期しない型'
       end
       l = @stack.last
-      if l.is_a?(String) && %w[true false].include?(l) && !@stack[1..].empty?
+      if l.is_a?(String) && %w[true false].include?(l) && !@stack[1..].empty? && xs.empty?
         @stack.pop
         parse_run xs.unshift(l) # true/false が積まれたら、もう一回実行する
       else
@@ -122,8 +122,8 @@ class Emehcs < EmehcsBase
     elsif x == '*'      then mul
     elsif x == '<'      then lt
     elsif x == '=='     then eq
-    elsif x == 'true'   then my_true
-    elsif x == 'false'  then my_false
+    elsif x == 'true'   then em.empty? && !@stack.empty? ? my_true  : @stack.push(x)
+    elsif x == 'false'  then em.empty? && !@stack.empty? ? my_false : @stack.push(x)
     elsif x == 'even?'  then even
     elsif x == 'x/2'    then div2
     elsif x == '3x+1'   then mul3
