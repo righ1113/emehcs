@@ -39,3 +39,6 @@ Style/SpecialGlobalVars:
 
 Metrics/BlockLength:
   Max: 50
+
+Layout/HashAlignment:
+  Enabled: false

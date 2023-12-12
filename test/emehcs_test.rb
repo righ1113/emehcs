@@ -8,7 +8,7 @@ require 'minitest/autorun'
 require './app/emehcs'
 
 class EmehcsTest < Minitest::Test
-  def test_case
+  def test_case1
     code1  = [1, 2, '+']
     code2  = [[3, 7, '+'], 1, '+']
     code3  = [2, [3, 7, '+'], '+']
@@ -75,5 +75,23 @@ class EmehcsTest < Minitest::Test
         5 [] collatz)
     TEXT
     assert_equal [1, 2, 4, 8, 16, 5, :q], (emehcs.parse_run code16)
+  end
+
+  def test_case2
+    emehcs = Emehcs.new
+    code17 = '7 6 true'
+    code18 = 'false 6 false'
+    code19 = 'false'
+    code20 = '6 true'
+    e = assert_raises(RuntimeError) { emehcs.run code20 } # RuntimeErrorが発生することを検証
+    code22 = '[] [3] =='
+    code23 = 'x/2 (>f 7 f)'
+
+    assert_equal 6,       (emehcs.run code17)
+    assert_equal 'false', (emehcs.run code18)
+    assert_equal 'false', (emehcs.run code19)
+    assert_equal '引数が不足しています', e.message # エラーメッセージを検証
+    assert_equal 'false', (emehcs.run code22)
+    assert_equal 3,       (emehcs.run code23)
   end
 end

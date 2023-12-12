@@ -62,7 +62,7 @@ class EmehcsBase
     @stack.push(y2 == y1 ? 'true' : 'false')
   end
 
-  # ④ true/false でも :q チェック
+  # (4) true/false でも :q チェック
   def my_true
     y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
     raise '引数が不足しています' if y1.nil? || y2.nil?
@@ -117,24 +117,10 @@ class Emehcs < EmehcsBase
   private
 
   def parse_string(x, em)
-    if    x == '+'      then plus
-    elsif x == '-'      then minus
-    elsif x == '*'      then mul
-    elsif x == '<'      then lt
-    elsif x == '=='     then eq
-    elsif x == 'true'   then em.empty? && !@stack.empty? ? my_true  : @stack.push(x)
-    elsif x == 'false'  then em.empty? && !@stack.empty? ? my_false : @stack.push(x)
-    elsif x == 'even?'  then even
-    elsif x == 'x/2'    then div2
-    elsif x == '3x+1'   then mul3
-    elsif x == 'cons'   then cons
-    elsif x == '0mod3?' then mod3
-    elsif x == '0mod5?' then mod5
-    elsif x == 's.++'   then s_append
-    elsif x == 'sample' then my_sample
-    elsif x == 'error'  then error
-    elsif x == 'car'    then car
-    elsif x == 'cdr'    then cdr
+    if    EMEHCS_FUNC_TABLE.key? x
+      em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
+    elsif EMEHCS_FUNC_TABLE.key? @env[x]
+      em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
     elsif x[0] == '>' # 関数定義
@@ -142,29 +128,29 @@ class Emehcs < EmehcsBase
       @stack.push x[1..] if em.empty? # REPL に関数名を出力する
     elsif x[0] == '=' # 変数定義
       pop = @stack.pop
-      # p "=== #{x} #{pop} #{@env[x[1..]]}"
-      # ③ 変数定義のときは、Array を展開する
+      # (3) 変数定義のときは、Array を実行する
       @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
       @stack.push x[1..] if em.empty? # REPL に変数名を出力する
     elsif @env[x].is_a?(Array)
-      # p "arra: #{x} #{@arr_flg} #{em}"
-      # ② name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
+      # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
       if em.empty? && @env[x].last != :q
         @stack.push parse_run Const.deep_copy(@env[x])
       else
         @stack.push           Const.deep_copy(@env[x])
       end
     else
-      # p "norm: #{x} #{@env[x]}"
       @stack.push @env[x] # ふつうの name
     end
   end
 
-  # ① Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
+  # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em) = (em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
 end
 
-emehcs = Emehcs.new
-repl = Repl.new emehcs
-repl.prelude
-repl.repl
+# メイン関数としたもの
+if __FILE__ == $PROGRAM_NAME
+  emehcs = Emehcs.new
+  repl = Repl.new emehcs
+  repl.prelude
+  repl.repl
+end
