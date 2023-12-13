@@ -86,6 +86,7 @@ class EmehcsTest < Minitest::Test
     e = assert_raises(RuntimeError) { emehcs.run code20 } # RuntimeErrorが発生することを検証
     code22 = '[] [3] =='
     code23 = 'x/2 (>f 7 f)'
+    code24 = '(>f >g (=x x g) f) >>>> 5 (5 +) (2 *) >>>'
 
     assert_equal 6,       (emehcs.run code17)
     assert_equal 'false', (emehcs.run code18)
@@ -93,5 +94,6 @@ class EmehcsTest < Minitest::Test
     assert_equal '引数が不足しています', e.message # エラーメッセージを検証
     assert_equal 'false', (emehcs.run code22)
     assert_equal 3,       (emehcs.run code23)
+    assert_equal 20,      (emehcs.run code24)
   end
 end

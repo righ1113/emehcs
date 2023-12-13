@@ -123,7 +123,7 @@ class Emehcs < EmehcsBase
       em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
-    elsif x[0] == '>' # 関数定義
+    elsif x[0] == '>' && (x != '>>>') # 関数定義
       @env[x[1..]] = @stack.pop
       @stack.push x[1..] if em.empty? # REPL に関数名を出力する
     elsif x[0] == '=' # 変数定義

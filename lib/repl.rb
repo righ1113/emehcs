@@ -21,7 +21,7 @@ class Repl
     codes = f.read.split('|')
     f.close
     codes.each do |c|
-      @emehcs_obj.run(c).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+      @emehcs_obj.run(c)
       # puts s
     end
   end
@@ -40,11 +40,11 @@ class Repl
         codes = f.read.split('|')
         f.close
         codes.each do |c|
-          s = @emehcs_obj.run(c).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+          s = run_after @emehcs_obj.run(c).to_s
           puts s
         end
       else
-        s = @emehcs_obj.run(prompt).to_s.gsub(/ ?:q/, '').to_s.gsub('"', '').to_s.gsub(',', '')
+        s = run_after @emehcs_obj.run(prompt).to_s
         puts s
       end
     rescue Interrupt
@@ -57,4 +57,6 @@ class Repl
       puts "Error: #{$!}"
     end
   end
+
+  def run_after(str) = str.gsub(/ ?:q/, '').gsub('"', '').gsub(',', '')
 end
