@@ -48,7 +48,7 @@ class Repl
         puts s
       end
     rescue Interrupt
-      puts "\nBye!"
+      puts 'Bye!'
       File.open(Const::READLINE_HIST_FILE, 'w') do |f2|
         Readline::HISTORY.each { f2.puts _1 }
       end

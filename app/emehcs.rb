@@ -27,13 +27,16 @@ class EmehcsBase
 
   def common1
     y1 = @stack.pop
+    raise '引数が不足しています' if y1.nil?
+
     y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
   end
 
   def common2
-    y1 = @stack.pop
+    y1 = @stack.pop; y2 = @stack.pop
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
     y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-    y2 = @stack.pop
     y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
     [y1_ret, y2_ret]
   end
@@ -118,12 +121,20 @@ class Emehcs < EmehcsBase
 
   def parse_string(x, em)
     if    EMEHCS_FUNC_TABLE.key? x
-      em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
+      if %w[true false].include?(x)
+        em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)
+      else
+        em.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
+      end
     elsif EMEHCS_FUNC_TABLE.key? @env[x]
-      em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
+      if %w[true false].include?(@env[x])
+        em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
+      else
+        em.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
+      end
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
-    elsif x[0] == '>' && (x != '>>>') # 関数定義
+    elsif x[0] == '>' && x != '>>>' # 関数定義
       @env[x[1..]] = @stack.pop
       @stack.push x[1..] if em.empty? # REPL に関数名を出力する
     elsif x[0] == '=' # 変数定義
