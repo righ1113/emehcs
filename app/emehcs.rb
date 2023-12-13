@@ -21,7 +21,10 @@ class EmehcsBase
     @stack = []
   end
 
-  def parse_run(code) end
+  # abstract_method
+  def parse_run(code)
+    raise NotImplementedError, 'Subclasses must implement abstract_method'
+  end
 
   private
 
@@ -135,10 +138,15 @@ class Emehcs < EmehcsBase
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
     elsif x[0] == '>' && x != '>>>' # 関数定義
-      @env[x[1..]] = @stack.pop
+      pop = @stack.pop
+      raise '引数が不足しています' if pop.nil?
+
+      @env[x[1..]] = pop
       @stack.push x[1..] if em.empty? # REPL に関数名を出力する
     elsif x[0] == '=' # 変数定義
       pop = @stack.pop
+      raise '引数が不足しています' if pop.nil?
+
       # (3) 変数定義のときは、Array を実行する
       @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
       @stack.push x[1..] if em.empty? # REPL に変数名を出力する
