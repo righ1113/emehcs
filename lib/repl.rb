@@ -17,9 +17,10 @@ class Repl
   def prelude
     (puts 'no prelude.'; return) unless File.exist? Const::PRELUDE_FILE
 
-    f = File.open(Const::PRELUDE_FILE, 'r')
-    codes = f.read.split('|')
-    f.close
+    codes = []
+    File.open(Const::PRELUDE_FILE, 'r') do |f|
+      codes = f.read.split('|')
+    end
     codes.each do |c|
       @emehcs_obj.run(c)
       # puts s

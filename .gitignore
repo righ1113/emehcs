@@ -56,3 +56,4 @@ Gemfile.lock
 # .rubocop-https?--*
 
 /data/.readline_history
+/.vscode/settings.json

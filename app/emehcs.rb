@@ -127,26 +127,21 @@ class Emehcs < EmehcsBase
       if %w[true false].include?(x)
         em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)
       else
-        em.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
+        em.empty? ?                   send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
       end
     elsif EMEHCS_FUNC_TABLE.key? @env[x]
       if %w[true false].include?(@env[x])
         em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
       else
-        em.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
+        em.empty? ?                   send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
       end
     elsif x[-2..] == ':s' # 純粋文字列
       @stack.push x
     elsif x[0] == '>' && x != '>>>' # 関数定義
-      pop = @stack.pop
-      raise '引数が不足しています' if pop.nil?
-
-      @env[x[1..]] = pop
+      @env[x[1..]] = pop_raise
       @stack.push x[1..] if em.empty? # REPL に関数名を出力する
     elsif x[0] == '=' # 変数定義
-      pop = @stack.pop
-      raise '引数が不足しています' if pop.nil?
-
+      pop = pop_raise
       # (3) 変数定義のときは、Array を実行する
       @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
       @stack.push x[1..] if em.empty? # REPL に変数名を出力する
@@ -164,6 +159,13 @@ class Emehcs < EmehcsBase
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em) = (em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
+
+  def pop_raise
+    pop = @stack.pop
+    raise '引数が不足しています' if pop.nil?
+
+    pop
+  end
 end
 
 # メイン関数としたもの
