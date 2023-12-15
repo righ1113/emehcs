@@ -5,3 +5,9 @@
 (>f =inp inp [] f map0) >map                                                                        |
 
 (>f >g (=x x g) f) >>>>                                                                             |
+
+(=x =out =inp ((inp cdr) (out (inp car) cons) (x 1 -) take0)
+  (out reverse) ([] inp ==) (out reverse) (x 1 <)) >take0                                           |
+(=x =inp inp [] x take0) >take                                                                      |
+
+; (=x (x repeat) x cons) >repeat
