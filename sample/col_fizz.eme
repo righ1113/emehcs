@@ -6,11 +6,11 @@
 
 (=out =x =stop (
   (stop (x 1 +) (out x cons)      fizz)
-  (stop (x 1 +) (out fizz:s cons) fizz) (x 0mod3?)) out (stop x <)) >fizz                                         |
+  (stop (x 1 +) (out "fizz" cons) fizz) (x 0mod3?)) out (stop x <)) >fizz                                         |
 
 (=out =x (=y y (out x cons) collatz) >rec (((x 3x+1) rec) ((x x/2) rec) (x even?)) (out 1 cons) (x 2 <)) >collatz |
 
-(=out =x =stop (((:s Buzz:s (x 0mod5?)) (:s Fizz:s (x 0mod3?)) s.++) >d d x (d :s ==)) >fb
+(=out =x =stop ((("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) >d d x (d "" ==)) >fb
   (stop (x 1 +) (out fb cons) fizzbuzz) out (stop x <)) >fizzbuzz                                                 |
 
 5 [] collatz                                                                                                      |

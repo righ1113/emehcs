@@ -89,15 +89,17 @@ class EmehcsTest < Minitest::Test
     code24 = '(>f >g (=x x g) f) >>>> 5 (5 +) (2 *) >>>'
     code25 = '4 3 false 2 false 1 false'
     code26 = '(>f >g (=x x g) f) >>>> 5 ((5 +) (2 *) >>>) (3 -) >>>'
+    code27 = '"aaa    aaa a   a"'
 
-    assert_equal 6,       (emehcs.run code17)
-    assert_equal 'false', (emehcs.run code18)
-    assert_equal 'false', (emehcs.run code19)
+    assert_equal 6,                    (emehcs.run code17)
+    assert_equal 'false',              (emehcs.run code18)
+    assert_equal 'false',              (emehcs.run code19)
     assert_equal '引数が不足しています', e.message # エラーメッセージを検証
-    assert_equal 'false', (emehcs.run code22)
-    assert_equal 3,       (emehcs.run code23)
-    assert_equal 20,      (emehcs.run code24)
-    assert_equal 4,       (emehcs.run code25)
-    assert_equal 17,      (emehcs.run code26)
+    assert_equal 'false',              (emehcs.run code22)
+    assert_equal 3,                    (emehcs.run code23)
+    assert_equal 20,                   (emehcs.run code24)
+    assert_equal 4,                    (emehcs.run code25)
+    assert_equal 17,                   (emehcs.run code26)
+    assert_equal 'aaa%%%%aaa%a%%%a:s', (emehcs.run code27)
   end
 end

@@ -4,8 +4,19 @@
 module Parse2Core
   private
 
-  def parse2_core(str) =
-    parse2_sub str.gsub(/;.*/, '').gsub('[', '(').gsub(']', ' :q)').gsub('(', '( ').gsub(')', ' )').split(' '), []
+  def parse2_core(str)
+    str2 =  str
+            .gsub(/;.*/, '')
+            .gsub('[', '(').gsub(']', ' :q)')
+            .gsub('(', '( ').gsub(')', ' )')
+            .gsub(/\A/, ' ').gsub(/\z/, ' ')
+            .gsub('""', ':s')
+    str3 = str2
+    str2.scan(/ (?<x>".+?") /).each do |expr|
+      str3 = str3.gsub(expr[0], "#{expr[0].gsub('"', '').gsub(' ', '%')}:s")
+    end
+    parse2_sub str3.split(' '), []
+  end
 
   # 文字列code から 配列code へ変換
   def parse2_sub(data, acc)
