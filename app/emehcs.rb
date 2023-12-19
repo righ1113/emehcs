@@ -9,6 +9,7 @@
 # ・実行方法
 # $ cd emehcs
 # $ bundle exec ruby app/emehcs.rb
+# > [ctrl]+D か exit で終了
 
 require './lib/const'
 require './lib/parse2_core'
