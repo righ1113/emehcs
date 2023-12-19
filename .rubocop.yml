@@ -42,3 +42,6 @@ Metrics/BlockLength:
 
 Layout/HashAlignment:
   Enabled: false
+
+Style/EndOfLine:
+  EnforcedStyle: lf
