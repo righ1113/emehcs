@@ -37,15 +37,24 @@ class Repl
       break if prompt == 'exit'
 
       if prompt[0..7] == 'loadFile'
-        f = File.open(prompt[9..], 'r')
-        codes = f.read.split('|')
-        f.close
+        codes = []
+        File.open(prompt[9..], 'r') do |f|
+          codes = f.read.split('|')
+        end
         codes.each do |c|
-          s = run_after @emehcs_obj.run(c).to_s
+          s = @emehcs_obj.run_after @emehcs_obj.run(c).to_s
+          puts s
+        end
+      elsif prompt.include?('|')
+        # 正常系 かつ '|' 使用
+        codes = prompt.split('|')
+        codes.each do |c|
+          s = @emehcs_obj.run_after @emehcs_obj.run(c).to_s
           puts s
         end
       else
-        s = run_after @emehcs_obj.run(prompt).to_s
+        # 正常系
+        s = @emehcs_obj.run_after @emehcs_obj.run(prompt).to_s
         puts s
       end
     rescue Interrupt
@@ -56,15 +65,6 @@ class Repl
       break
     rescue StandardError
       puts "Error: #{$!}"
-    end
-  end
-
-  def run_after(str)
-    str2 = str.gsub(/ ?:q/, '').gsub(',', '').gsub('%', ' ')
-    if /"/ !~ str2 && /:s/ =~ str2
-      str2.gsub(':s', '').gsub(/(.+)/, '"\1"') # 単独文字列
-    else
-      str2.gsub(':s', '')                      # リスト
     end
   end
 end

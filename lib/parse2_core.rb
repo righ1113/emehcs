@@ -2,6 +2,15 @@
 
 # Parse2Core モジュールにしてみる
 module Parse2Core
+  def run_after(str)
+    str2 = str.gsub(/ ?:q/, '').gsub(',', '').gsub('%', ' ')
+    if /"/ !~ str2 && /:s/ =~ str2
+      str2.gsub(':s', '').gsub(/(.+)/, '"\1"') # 単独文字列
+    else
+      str2.gsub(':s', '')                      # リスト
+    end
+  end
+
   private
 
   def parse2_core(str)
@@ -12,7 +21,7 @@ module Parse2Core
             .gsub(/\A/, ' ').gsub(/\z/, ' ')
             .gsub('""', ':s')
     str3 = str2
-    str2.scan(/ (?<x>".+?") /).each do |expr|
+    str2.scan(/ (".+?") /).each do |expr|
       str3 = str3.gsub(expr[0], "#{expr[0].gsub('"', '').gsub(' ', '%')}:s")
     end
     parse2_sub str3.split(' '), []
