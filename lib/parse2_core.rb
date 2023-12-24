@@ -2,15 +2,6 @@
 
 # Parse2Core モジュールにしてみる
 module Parse2Core
-  def run_after(str)
-    str2 = str.gsub(/ ?:q/, '').gsub(',', '').gsub('%', ' ')
-    if /"/ !~ str2 && /:s/ =~ str2
-      str2.gsub(':s', '').gsub(/(.+)/, '"\1"') # 単独文字列
-    else
-      str2.gsub(':s', '')                      # リスト
-    end
-  end
-
   private
 
   def parse2_core(str)
@@ -44,6 +35,15 @@ module Parse2Core
           parse2_sub xs, acc + [x]
         end
       end
+    end
+  end
+
+  def run_after(str)
+    str2 = str.gsub(/ ?:q/, '').gsub(',', '').gsub('%', ' ')
+    if /"/ !~ str2 && /:s/ =~ str2
+      str2.gsub(':s', '').gsub(/(.+)/, '"\1"') # 単独文字列
+    else
+      str2.gsub(':s', '')                      # リスト
     end
   end
 end

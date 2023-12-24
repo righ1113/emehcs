@@ -45,12 +45,26 @@ class EmehcsBase
     [y1_ret, y2_ret]
   end
 
+  # (4) true/false でも :q チェック
+  def my_true_false(bool)
+    y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
+    if bool
+      y1.is_a?(Array) && y1.last != :q ? @stack.push(parse_run(y1)) : @stack.push(y1)
+    else
+      y2.is_a?(Array) && y2.last != :q ? @stack.push(parse_run(y2)) : @stack.push(y2)
+    end
+  end
+
   def plus      = (y1, y2 = common2; @stack.push y1 + y2)
   def minus     = (y1, y2 = common2; @stack.push y2 - y1)
   def mul       = (y1, y2 = common2; @stack.push y1 * y2)
-  def even      = (y1     = common1; @stack.push(y1.even? ? 'true' : 'false'))
+  def lt        = (y1, y2 = common2; @stack.push(y2 < y1 ? 'true' : 'false'))
+  def eq        = (y1, y2 = common2; @stack.push(y2 == y1 ? 'true' : 'false'))
   def div2      = (y1     = common1; @stack.push y1 / 2)
   def mul3      = (y1     = common1; @stack.push y1 * 3 + 1)
+  def even      = (y1     = common1; @stack.push(y1.even? ? 'true' : 'false'))
   def mod3      = (y1     = common1; @stack.push((y1 % 3).zero? ? 'true' : 'false'))
   def mod5      = (y1     = common1; @stack.push((y1 % 5).zero? ? 'true' : 'false'))
   def s_append  = (y1, y2 = common2; @stack.push y1[0..-3] + y2)
@@ -58,33 +72,9 @@ class EmehcsBase
   def error     = (y1     = common1; @stack.push raise y1.to_s)
   def car       = (y1     = common1; z = y1[0..-2]; @stack.push z[0])
   def cdr       = (y1     = common1; @stack.push y1[1..])
-
-  def lt
-    y1, y2 = common2
-    @stack.push(y2 < y1 ? 'true' : 'false')
-  end
-
-  def eq
-    y1, y2 = common2
-    @stack.push(y2 == y1 ? 'true' : 'false')
-  end
-
-  # (4) true/false でも :q チェック
-  def my_true
-    y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
-    raise '引数が不足しています' if y1.nil? || y2.nil?
-
-    y1.is_a?(Array) && y1.last != :q ? @stack.push(parse_run(y1)) : @stack.push(y1)
-  end
-
-  def my_false
-    y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
-    raise '引数が不足しています' if y1.nil? || y2.nil?
-
-    y2.is_a?(Array) && y2.last != :q ? @stack.push(parse_run(y2)) : @stack.push(y2)
-  end
-
-  def cons = (y1, y2 = common2; @stack.push y2.unshift(y1);)
+  def cons      = (y1, y2 = common2; @stack.push y2.unshift(y1);)
+  def my_true   = my_true_false true
+  def my_false  = my_true_false false
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -114,7 +104,7 @@ class Emehcs < EmehcsBase
     end
   end
 
-  def run(str_code) = (@stack = []; parse_run(parse2(str_code)))
+  def run(str_code) = (@stack = []; run_after(parse_run(parse2(str_code)).to_s))
 
   def reset_env = (@env = {})
 

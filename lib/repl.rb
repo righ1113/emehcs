@@ -42,20 +42,16 @@ class Repl
           codes = f.read.split('|')
         end
         codes.each do |c|
-          s = @emehcs_obj.run_after @emehcs_obj.run(c).to_s
-          puts s
+          puts @emehcs_obj.run(c)
         end
       elsif prompt.include?('|')
-        # 正常系 かつ '|' 使用
-        codes = prompt.split('|')
-        codes.each do |c|
-          s = @emehcs_obj.run_after @emehcs_obj.run(c).to_s
-          puts s
+        # normal かつ '|' 使用
+        prompt.split('|').each do |c|
+          puts @emehcs_obj.run(c)
         end
       else
-        # 正常系
-        s = @emehcs_obj.run_after @emehcs_obj.run(prompt).to_s
-        puts s
+        # normal
+        puts @emehcs_obj.run(prompt)
       end
     rescue Interrupt
       puts "\nBye!"
