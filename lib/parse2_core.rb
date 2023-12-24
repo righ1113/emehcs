@@ -39,7 +39,7 @@ module Parse2Core
         if /\A[-+]?\d+\z/ =~ x
           parse2_sub xs, acc + [x.to_i] # 数値
         elsif x == ':q'
-          parse2_sub xs, acc + [:q]     # 配列のしるし
+          parse2_sub xs, acc + [:q]     # リストのしるし
         else
           parse2_sub xs, acc + [x]
         end
