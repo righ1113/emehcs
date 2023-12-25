@@ -23,7 +23,10 @@ module Const
     'sample' => :my_sample,
     'error'  => :error,
     'car'    => :car,
-    'cdr'    => :cdr
+    'cdr'    => :cdr,
+    'timer1' => :timer1,
+    'timer2' => :timer2,
+    'cmd'    => :cmd
   }.freeze
 
   # Const クラス

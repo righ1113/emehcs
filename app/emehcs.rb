@@ -11,6 +11,7 @@
 # $ bundle exec ruby app/emehcs.rb
 # > [ctrl]+D か exit で終了
 
+require 'time'
 require './lib/const'
 require './lib/parse2_core'
 require './lib/repl'
@@ -57,6 +58,17 @@ class EmehcsBase
     end
   end
 
+  def timer(mode)
+    y1 = @stack.pop; y2 = @stack.pop
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
+    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
+    y1_ret = (Time.parse(y1_ret) - Time.now).to_i if mode == 2
+    sleep y1_ret
+    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
+    @stack.push y2_ret
+  end
+
   def plus      = (y1, y2 = common2; @stack.push y1 + y2)
   def minus     = (y1, y2 = common2; @stack.push y2 - y1)
   def mul       = (y1, y2 = common2; @stack.push y1 * y2)
@@ -75,6 +87,9 @@ class EmehcsBase
   def cons      = (y1, y2 = common2; @stack.push y2.unshift(y1);)
   def my_true   = my_true_false true
   def my_false  = my_true_false false
+  def timer1    = timer 1
+  def timer2    = timer 2
+  def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
