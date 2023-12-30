@@ -1,3 +1,11 @@
+(=x 1 (x 3 *) +) >3x+1                                                                              |
+(2 /) >x/2                                                                                          |
+
+(=x =d =m m (x d mod) ==) >mod_base                                                                 |
+(=x 0 2 x mod_base) >even?                                                                          |
+(=x 0 3 x mod_base) >0mod3?                                                                         |
+(=x 0 5 x mod_base) >0mod5?                                                                         |
+
 (=out =inp ((inp cdr) (out (inp car) cons) reverse0) out ([] inp ==)) >reverse0                     |
 (=inp inp [] reverse0) >reverse                                                                     |
 

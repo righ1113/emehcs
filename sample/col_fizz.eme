@@ -14,4 +14,4 @@
   (stop (x 1 +) (out fb cons) fizzbuzz) out (stop x <)) >fizzbuzz                                                 |
 
 5 [] collatz                                                                                                      |
-30 1 [] fizzbuzz
+60 1 [] fizzbuzz
