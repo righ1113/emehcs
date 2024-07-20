@@ -23,6 +23,10 @@ fizzbuzz
 ["FizzBuzz" 59 58 "Fizz" 56 "Buzz" "Fizz" 53 52 "Fizz" "Buzz" 49 "Fizz" 47 46 "FizzBuzz" 44 43 "Fizz" 41 "Buzz" "Fizz" 38 37 "Fizz" "Buzz" 34 "Fizz" 32 31 "FizzBuzz" 29 28 "Fizz" 26 "Buzz" "Fizz" 23 22 "Fizz" "Buzz" 19 "Fizz" 17 16 "FizzBuzz" 14 13 "Fizz" 11 "Buzz" "Fizz" 8 7 "Fizz" "Buzz" 4 "Fizz" 2 1]
 emehcs>
 ```
+```
+... =x 左辺を評価する
+... >x 左辺の関数に名前をつける
+```
 
 # 変更履歴
 24/01/11 emehcs version 0.1.0  
