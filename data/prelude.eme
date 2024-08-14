@@ -19,3 +19,7 @@
 (=x =inp inp [] x take0) >take                                                                      |
 
 ; (=x (x repeat) x cons) >repeat
+
+(=out =start =stop =step
+  (step stop (start step +) (out start cons) cDiff0) (out reverse) (stop start <)) >cDiff0          |
+([] cDiff0) >cDiff

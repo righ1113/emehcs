@@ -10,8 +10,8 @@
 
 (=out =x (=y y (out x cons) collatz) >rec (((x 3x+1) rec) ((x x/2) rec) (x even?)) (out 1 cons) (x 2 <)) >collatz |
 
-(=out =x =stop ((("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) >d d x (d "" ==)) >fb
-  (stop (x 1 +) (out fb cons) fizzbuzz) out (stop x <)) >fizzbuzz                                                 |
+(=x (=d d x (d "" ==)) >ifd
+  (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) ifd) >fb                                                   |
 
 5 [] collatz                                                                                                      |
-60 1 [] fizzbuzz
+(1 30 1 cDiff) fb map
