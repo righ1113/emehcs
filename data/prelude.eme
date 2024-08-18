@@ -1,25 +1,23 @@
-(=x 1 (x 3 *) +) >3x+1                                                                              |
-(2 /) >x/2                                                                                          |
+(=x 1 (x 3 *) +) >3x+1                                                                                 |
+(2 /) >x/2                                                                                             |
 
-(=x =d =m m (x d mod) ==) >mod_base                                                                 |
-(=x 0 2 x mod_base) >even?                                                                          |
-(=x 0 3 x mod_base) >0mod3?                                                                         |
-(=x 0 5 x mod_base) >0mod5?                                                                         |
+(=d =m =x m (x d mod) ==) >modBase                                                                     |
+(0 2 modBase) >even?                                                                                   |
+(0 3 modBase) >0mod3?                                                                                  |
+(0 5 modBase) >0mod5?                                                                                  |
 
-(=out =inp ((inp cdr) (out (inp car) cons) reverse0) out ([] inp ==)) >reverse0                     |
-(=inp inp [] reverse0) >reverse                                                                     |
+(=out =inp ((inp cdr) (out (inp car) cons) reverse0) out ([] inp ==)) >reverse0                        |
+([] reverse0) >reverse                                                                                 |
 
-(>f =out =inp ((inp car) f) >ret ((inp cdr) (out ret cons) f map0) (out reverse) ([] inp ==)) >map0 |
-(>f =inp inp [] f map0) >map                                                                        |
+(=out2 >f =inp ((inp car) f) >ret ((inp cdr) f (out2 ret cons) map0) (out2 reverse) ([] inp ==)) >map0 |
+([] map0) >map                                                                                         |
 
-(>f >g (=x x g) f) >>>>                                                                             |
+(>f >g (=x x g) f) >>>>                                                                                |
 
-(=x =out =inp ((inp cdr) (out (inp car) cons) (x 1 -) take0)
-  (out reverse) ([] inp ==) (out reverse) (x 1 <)) >take0                                           |
-(=x =inp inp [] x take0) >take                                                                      |
-
-; (=x (x repeat) x cons) >repeat
+(=out =x =inp ((inp cdr) (x 1 -) (out (inp car) cons) take0)
+  (out reverse) ([] inp ==) (out reverse) (x 1 <)) >take0                                              |
+([] take0) >take                                                                                       |
 
 (=out =start =stop =step
-  (step stop (start step +) (out start cons) cDiff0) (out reverse) (stop start <)) >cDiff0          |
+  (step stop (start step +) (out start cons) cDiff0) (out reverse) (stop start <)) >cDiff0             |
 ([] cDiff0) >cDiff
