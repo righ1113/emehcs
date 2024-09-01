@@ -102,4 +102,11 @@ class EmehcsTest < Minitest::Test
     assert_equal '17',                 (emehcs.run code26)
     assert_equal '"aaa    aaa a   a"', (emehcs.run code27)
   end
+
+  def test_case3
+    emehcs = Emehcs.new
+    code28 = '1 =x x (x 1 +) (x 2 +) list'
+
+    assert_equal '[1 2 3]', (emehcs.run code28)
+  end
 end
