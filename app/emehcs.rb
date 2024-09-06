@@ -89,8 +89,19 @@ class EmehcsBase
   def timer1    = timer 1
   def timer2    = timer 2
   def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
-  def list      = @stack.push(Const.deep_copy(@stack).map { |n| parse_run [n] })
+
   # def eval      = (y1 = common1; @stack.push parse_run(y1.map { |n| n.gsub('"', '') }))
+
+  def list(s)
+    s.map! do |n|
+      if n[0] == '=' || n[0] == '>'
+        parse_run [n]
+      else
+        parse_run [n, n]
+      end
+    end
+    @stack.push(s.push(:q))
+  end
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -99,6 +110,11 @@ class Emehcs < EmehcsBase
 
   # メインルーチン
   def parse_run(code)
+    if code.last == 'list'
+      parse_array code, []
+      return @stack.pop
+    end
+
     case code
     in [] then @stack.pop
     in [x, *xs]
@@ -164,7 +180,14 @@ class Emehcs < EmehcsBase
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = (em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
+  def parse_array(x, em)
+    if x.last == 'list'
+      # list は正格評価
+      list(x[0..-2])
+    else
+      em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x)
+    end
+  end
 
   def pop_raise
     pop = @stack.pop

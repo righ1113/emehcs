@@ -23,8 +23,8 @@ module Const
     'cdr'    => :cdr,
     'timer1' => :timer1,
     'timer2' => :timer2,
-    'cmd'    => :cmd,
-    'list'   => :list
+    'cmd'    => :cmd
+    # 'list'   => :list は直接呼び出す
   }.freeze
 
   # Const クラス
