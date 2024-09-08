@@ -45,3 +45,6 @@ Layout/HashAlignment:
 
 Style/EndOfLine:
   EnforcedStyle: lf
+
+Metrics/BlockNesting:
+  Max: 4

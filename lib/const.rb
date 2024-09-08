@@ -4,7 +4,7 @@
 module Const
   READLINE_HIST_FILE = './data/.readline_history'
   PRELUDE_FILE       = './data/prelude.eme'
-  EMEHCS_VERSION     = 'emehcs version 0.1.0'
+  EMEHCS_VERSION     = 'emehcs version 0.2.0'
   EMEHCS_FUNC_TABLE  = {
     '+'      => :plus,
     '-'      => :minus,

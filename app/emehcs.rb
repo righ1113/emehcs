@@ -23,6 +23,7 @@ class EmehcsBase
   def initialize
     @env   = {}
     @stack = []
+    @code_len = 0
   end
 
   # abstract_method
@@ -92,36 +93,33 @@ class EmehcsBase
 
   # def eval      = (y1 = common1; @stack.push parse_run(y1.map { |n| n.gsub('"', '') }))
 
-  def list(s)
-    s.map! do |n|
-      if n[0] == '=' || n[0] == '>'
-        parse_run [n]
-      else
-        parse_run [n, n]
-      end
-    end
-    @stack.push(s.push(:q))
-  end
-end
-
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
 class Emehcs < EmehcsBase
   include Parse2Core
 
   # メインルーチン
   def parse_run(code)
-    if code.last == 'list'
-      parse_array code, []
-      return @stack.pop
-    end
+    @code_len = code.length if @code_len.zero?
 
     case code
-    in [] then @stack.pop
+    in [] then
+      @code_len = 0
+      @stack.pop
     in [x, *xs]
       case x
       in Integer then @stack.push x
-      in String  then parse_string x, xs
-      in Array   then parse_array  x, xs
+      in String  then
+        if x == 'list'
+          s = Const.deep_copy(@stack.pop(@code_len - 1))
+          s.map! do |n|
+            n.is_a?(Array) ? (@stack.shift; parse_run(n)) : parse_run([n])
+          end
+          @code_len = 0
+          return s.push(:q)
+        else
+          parse_string x, xs
+        end
+      in Array   then parse_array x, xs
       in Symbol  then # do nothing
       else raise '予期しない型'
       end
@@ -181,12 +179,7 @@ class Emehcs < EmehcsBase
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em)
-    if x.last == 'list'
-      # list は正格評価
-      list(x[0..-2])
-    else
-      em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x)
-    end
+    em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x)
   end
 
   def pop_raise
