@@ -92,6 +92,7 @@ class EmehcsBase
   def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
 
   # def eval      = (y1 = common1; @stack.push parse_run(y1.map { |n| n.gsub('"', '') }))
+end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
 class Emehcs < EmehcsBase
