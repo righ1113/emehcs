@@ -113,7 +113,7 @@ class Emehcs < EmehcsBase
         if x == 'list'
           s = Const.deep_copy(@stack.pop(@code_len - 1))
           s.map! do |n|
-            n.is_a?(Array) ? (@stack.shift; parse_run(n)) : parse_run([n])
+            n.is_a?(Array) && n.last != :q ? (@stack.shift; parse_run(n)) : parse_run([n])
           end
           @code_len = 0
           return s.push(:q)
