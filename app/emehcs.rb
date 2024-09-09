@@ -180,6 +180,7 @@ class Emehcs < EmehcsBase
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em)
+    @code_len += @stack.length
     em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x)
   end
 

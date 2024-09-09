@@ -106,9 +106,11 @@ class EmehcsTest < Minitest::Test
   def test_case3
     emehcs = Emehcs.new
     code28 = '1 =x x (x 1 +) (x 2 +) list'
-    code29 = '(3 5 7 list) 55 1 2 list'
+    code29 = '1 (=x x (x 1 +) (x 2 +) list)'
+    code30 = '(3 5 7 list) 55 1 2 list'
 
     assert_equal '[1 2 3]',            (emehcs.run code28)
-    assert_equal '[[3 5 7] 55 1 2]',   (emehcs.run code29)
+    assert_equal '[1 2 3]',            (emehcs.run code29)
+    assert_equal '[[3 5 7] 55 1 2]',   (emehcs.run code30)
   end
 end
