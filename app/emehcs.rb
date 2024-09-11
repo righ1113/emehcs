@@ -169,6 +169,7 @@ class Emehcs < EmehcsBase
     elsif @env[x].is_a?(Array)
       # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
       if em.empty? && @env[x].last != :q
+        @code_len = 0
         @stack.push parse_run Const.deep_copy(@env[x])
       else
         @stack.push           Const.deep_copy(@env[x])
