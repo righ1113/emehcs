@@ -25,7 +25,8 @@ module Const
     'timer2' => :timer2,
     'cmd'    => :cmd,
     # 'list'   => :list は直接呼び出す
-    'eval'   => :eval
+    'eval'   => :eval,
+    'eq2'    => :eq2
   }.freeze
 
   # Const クラス

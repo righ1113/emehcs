@@ -31,6 +31,11 @@ class EmehcsBase
     raise NotImplementedError, 'Subclasses must implement abstract_method'
   end
 
+  # abstract_method
+  def run_after(str)
+    raise NotImplementedError, 'Subclasses must implement abstract_method'
+  end
+
   private
 
   def common1
@@ -92,6 +97,7 @@ class EmehcsBase
   def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
   # 末尾の :q を除く
   def eval      = (y1 = common1; @code_len = 0; @stack.push parse_run(y1[0..-2]))
+  def eq2       = (y1, y2 = common2; @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
