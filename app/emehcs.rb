@@ -90,8 +90,8 @@ class EmehcsBase
   def timer1    = timer 1
   def timer2    = timer 2
   def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
-
-  # def eval      = (y1 = common1; @stack.push parse_run(y1.map { |n| n.gsub('"', '') }))
+  # 末尾の :q を除く
+  def eval      = (y1 = common1; @stack.push parse_run(y1[0..-2]))
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
