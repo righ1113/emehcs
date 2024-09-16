@@ -1,0 +1,31 @@
+; > loadFile ./sample/goedel.eme
+
+(=x x "unreachable?" list) >u              |
+
+[[=x (x x list) u] (=x (x x list) u)] =bar |
+
+bar u                                      |
+
+bar eval                                   |
+
+((bar u) (bar eval) eq2)                   |
+
+; ------------------------------------------
+; 今はなき『不完全性定理.改』を参考に
+; 通常の Scheme の書き方です
+; ・ウ.[到達可 baz]ではない
+; ・エ.[到達可 not-baz]ではない
+;
+; ウの証明
+; 背理法で、[到達可 baz] = [到達可 (u bar)] であるとする。
+; ┏[到達可 (eval bar)] --※--> [到達可 `(reachable? ,bar)]
+; ┗[到達可 (u bar)]    ------> [到達可 `(not (reachable? ,bar))]
+; 矛盾する。
+;
+; エの証明
+; 背理法で、[到達可 not-baz] = [到達可 `(reachable? ,bar)] であるとする。
+; --※--> [到達可 (eval bar)] ------> [到達可 baz]
+; 矛盾する。
+;
+;
+; ※ポイント2（詳細は残っていない）

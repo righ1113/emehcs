@@ -38,7 +38,7 @@ class Repl
 
       if prompt[0..7] == 'loadFile'
         codes = []
-        File.open(prompt[9..], 'r') do |f|
+        File.open(prompt[9..], 'r', encoding: Encoding::UTF_8) do |f|
           codes = f.read.split('|')
         end
         codes.each do |c|
