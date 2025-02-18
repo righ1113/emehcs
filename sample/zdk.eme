@@ -4,4 +4,13 @@
   ((x 1 +) (out "zun"  cons) zdk)
   ((0      (out "doko" cons) zdk) ((out "doko" cons) "ki-yo-shi!" cons) (3 x <)) (which "doko" ==)) >zdk |
 
-0 [] zdk
+(=out =x
+  (["zun" "doko"] sample) >which
+    (out "zun"        cons) =z
+      (out "doko"       cons) =d
+        (d   "ki-yo-shi!" cons) =k
+          ((x 1 +) z zdk) >zz
+            (0       d zdk) >zd
+              (zz (zd k (3 x <)) (which "doko" ==))) >zdk2                                               |
+
+0 [] zdk2
