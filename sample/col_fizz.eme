@@ -13,7 +13,7 @@
     (xc collatz) >rec
       ((x 3x+1) rec) >od
         ((x x/2) rec) >ev
-          (od ev (x even?)) xc (x 2 <)) >collatz                              |
+          od ev (x even?) xc (x 2 <)) >collatz                                |
 
 (=x (=d d x (d "" ==)) >ifd
   (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) ifd) >fb               |

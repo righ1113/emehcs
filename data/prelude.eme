@@ -15,7 +15,7 @@
 (=out2 >f =inp
   ((inp car) f) >ret
     (inp cdr) =ic
-      (out2 ret cons) =oc
+      (out2 ret cons) >oc
         (ic f oc map0) (out2 reverse) ([] inp ==)) >map0 |
 ([] map0) >map                                           |
 

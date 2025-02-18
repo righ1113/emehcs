@@ -11,6 +11,6 @@
         (d   "ki-yo-shi!" cons) =k
           ((x 1 +) z zdk) >zz
             (0       d zdk) >zd
-              (zz (zd k (3 x <)) (which "doko" ==))) >zdk2                                               |
+              zz (zd k (3 x <)) (which "doko" ==)) >zdk2                                                 |
 
 0 [] zdk2
