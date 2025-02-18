@@ -2,16 +2,21 @@
 
 (=out =x (
   ((x 3x+1) (out x cons) collatz0)
-  ((x x/2)  (out x cons) collatz0) (x even?)) (out 1 cons) (x 2 <)) >collatz0                                     |
+  ((x x/2)  (out x cons) collatz0) (x even?)) (out 1 cons) (x 2 <)) >collatz0 |
 
 (=out =x =stop (
   (stop (x 1 +) (out x cons)      fizz)
-  (stop (x 1 +) (out "fizz" cons) fizz) (x 0mod3?)) out (stop x <)) >fizz                                         |
+  (stop (x 1 +) (out "fizz" cons) fizz) (x 0mod3?)) out (stop x <)) >fizz     |
 
-(=out =x (=y y (out x cons) collatz) >rec (((x 3x+1) rec) ((x x/2) rec) (x even?)) (out 1 cons) (x 2 <)) >collatz |
+(=out =x
+  (out x cons) =xc
+    (xc collatz) >rec
+      ((x 3x+1) rec) >od
+        ((x x/2) rec) >ev
+          (od ev (x even?)) xc (x 2 <)) >collatz                              |
 
 (=x (=d d x (d "" ==)) >ifd
-  (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) ifd) >fb                                                   |
+  (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) ifd) >fb               |
 
-5 [] collatz                                                                                                      |
+5 [] collatz                                                                  |
 (1 30 1 cDiff) fb map
