@@ -22,7 +22,7 @@ class EmehcsTest < Minitest::Test
     code11 = [[1, 2, 3, :q], 'id']
     code12 = [[1, 2, 3, :q], '=dat', 'dat', 'id']
     # 再帰のときに、後の引数の計算(左)で、先の引数を使ってはいけない
-    code13 = [
+    _code13 = [
       ['=out', '=x', [
         [['x', '3x+1'], ['out', 'x', 'cons'], 'collatz'],
         [['x', 'x/2'], ['out', 'x', 'cons'], 'collatz'],
@@ -30,7 +30,7 @@ class EmehcsTest < Minitest::Test
       ], '>sub', 'sub', 'out', ['x', 2, '<']],
       '>collatz', 5, [:q], 'collatz'
     ]
-    code14 = [
+    _code14 = [
       ['=out', '=x', '=stop', [
         ['stop', ['x', 1, '+'], ['out', 'x', 'cons'], 'fizz'],
         ['stop', ['x', 1, '+'], ['out', 'fizz:s', 'cons'], 'fizz'],
@@ -66,7 +66,7 @@ class EmehcsTest < Minitest::Test
     # )
 
     assert_equal 66, emehcs.parse_run(emehcs.parse2('((=x x) >id (=x x) >id2 66 id)'))
-    code16 = emehcs.parse2 <<~TEXT
+    _code16 = emehcs.parse2 <<~TEXT
       ; これはコメントです。
       (
         (=out =x (
@@ -85,7 +85,7 @@ class EmehcsTest < Minitest::Test
     code20 = '6 true'
     e = assert_raises(RuntimeError) { emehcs.run code20 } # RuntimeErrorが発生することを検証
     code22 = '[] [3] =='
-    code23 = 'x/2 (>f 7 f)'
+    # code23 = 'x/2 (>f 7 f)'
     code24 = '(>f >g (=x x g) f) >>>> 5 (5 +) (2 *) >>>'
     code25 = '4 3 false 2 false 1 false'
     code26 = '(>f >g (=x x g) f) >>>> 5 ((5 +) (2 *) >>>) (3 -) >>>'
