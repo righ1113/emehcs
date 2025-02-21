@@ -15,10 +15,10 @@ module Parse2Core
     str2.scan(/ (".+?") /).each do |expr|
       str3 = str3.gsub(expr[0], "#{expr[0].gsub('"', '').gsub(' ', '%')}:s")
     end
-    parse2_sub str3.split(' '), []
+    parse2_sub str3.split(' '), [] # str3.split で文字列から配列へ
   end
 
-  # 文字列code から 配列code へ変換
+  # 配列code1 から 配列code2 へ変換
   def parse2_sub(data, acc)
     case data
     in [] then acc
