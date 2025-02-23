@@ -15,6 +15,7 @@ module Const
     '=='     => :eq,
     'true'   => :my_true,
     'false'  => :my_false,
+    '&&'     => :my_and,
     'cons'   => :cons,
     's.++'   => :s_append,
     'sample' => :my_sample,
@@ -26,7 +27,11 @@ module Const
     'cmd'    => :cmd,
     # 'list'   => :list は直接呼び出す
     'eval'   => :eval,
-    'eq2'    => :eq2
+    'eq2'    => :eq2,
+    '!!'     => :index,
+    'length' => :length,
+    'chr'    => :chr,
+    'up_p'   => :up_p
   }.freeze
 
   # Const クラス

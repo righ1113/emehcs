@@ -111,11 +111,21 @@ class EmehcsTest < Minitest::Test
     code31 = '[1 2] list'
     emehcs.run '(=x x "hoge" list) >v'
     code32 = '7 v'
+    code33 = 'false true &&'
+    code34 = '"abcde" 2 !!'
+    code35 = '"abcde" length'
+    code36 = '88 chr'
+    code37 = '[1 2 3] 1 100 up_p'
 
     assert_equal '[1 2 3]',            (emehcs.run code28)
     assert_equal '[1 2 4]',            (emehcs.run code29)
     assert_equal '[[3 5 7] 55 1 2]',   (emehcs.run code30)
     assert_equal '[[1 2]]',            (emehcs.run code31)
     assert_equal '[7 "hoge"]',         (emehcs.run code32)
+    assert_equal 'false',              (emehcs.run code33)
+    assert_equal 'c',                  (emehcs.run code34)
+    assert_equal '5',                  (emehcs.run code35)
+    assert_equal 'X',                  (emehcs.run code36)
+    assert_equal '[1 102 3]',          (emehcs.run code37)
   end
 end
