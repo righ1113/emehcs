@@ -77,6 +77,11 @@ class EmehcsBase
     @stack.push y2_ret
   end
 
+  def index
+    y1, y2 = common2
+    @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}:s"
+  end
+
   def plus      = (y1, y2 = common2; @stack.push y1 + y2)
   def minus     = (y1, y2 = common2; @stack.push y2 - y1)
   def mul       = (y1, y2 = common2; @stack.push y1 * y2)
@@ -99,7 +104,6 @@ class EmehcsBase
   def eval      = (y1 = common1; @code_len = 0; @stack.push parse_run(y1[0..-2]))
   def eq2       = (y1, y2 = common2; @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
   def my_and    = (y1, y2 = common2; @stack.push y1 && y2)
-  def index     = (y1, y2 = common2; @stack.push y2[y1])
   def length    = (y1     = common1; @stack.push y1.length - 2)
   def chr       = (y1     = common1; @stack.push y1.chr)
   def up_p      = (y1, y2 = common2; y3 = common1; y3[y2] += y1; @stack.push y3)

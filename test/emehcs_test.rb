@@ -123,7 +123,7 @@ class EmehcsTest < Minitest::Test
     assert_equal '[[1 2]]',            (emehcs.run code31)
     assert_equal '[7 "hoge"]',         (emehcs.run code32)
     assert_equal 'false',              (emehcs.run code33)
-    assert_equal 'c',                  (emehcs.run code34)
+    assert_equal '"c"',                (emehcs.run code34)
     assert_equal '5',                  (emehcs.run code35)
     assert_equal 'X',                  (emehcs.run code36)
     assert_equal '[1 102 3]',          (emehcs.run code37)
