@@ -77,6 +77,13 @@ class EmehcsBase
     @stack.push y2_ret
   end
 
+  def my_and
+    y1, y2 = common2
+    p "y1=#{y1}, y2=#{y2}"
+    ret = y1 == y2 && y1 == 'true' ? 'true' : 'false'
+    @stack.push ret
+  end
+
   def index
     y1, y2 = common2
     @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}:s"
@@ -91,7 +98,7 @@ class EmehcsBase
   def eq        = (y1, y2 = common2; @stack.push(y2 == y1 ? 'true' : 'false'))
   def s_append  = (y1, y2 = common2; @stack.push y1[0..-3] + y2)
   def my_sample = (y1     = common1; @stack.push y1[0..-2].sample)
-  def error     = (y1     = common1; @stack.push raise y1.to_s)
+  def error     = (y1     = common1; @stack.push raise y1.to_s[0..-3])
   def car       = (y1     = common1; z = y1[0..-2]; @stack.push z[0])
   def cdr       = (y1     = common1; @stack.push y1[1..])
   def cons      = (y1, y2 = common2; @stack.push y2.unshift(y1);)
@@ -103,7 +110,6 @@ class EmehcsBase
   # 末尾の :q を除く
   def eval      = (y1 = common1; @code_len = 0; @stack.push parse_run(y1[0..-2]))
   def eq2       = (y1, y2 = common2; @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
-  def my_and    = (y1, y2 = common2; @stack.push y1 && y2)
   def length    = (y1     = common1; @stack.push y1.length - 2)
   def chr       = (y1     = common1; @stack.push y1.chr)
   def up_p      = (y1, y2 = common2; y3 = common1; y3[y2] += y1; @stack.push y3)
