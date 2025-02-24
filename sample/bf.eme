@@ -3,20 +3,20 @@
 (=pro =i =stop =sign =bracket =d
   (pro i !!) =pro_i
     (d (d sign -) (pro_i "]" ==) (d sign +) (pro_i "[" ==)) =d2
-      d2 bracket sign stop (i sign +) pro nest
-        "pro_last" (i stop ==) i ((d 0 ==) (pro_i bracket ==) &&)) >nest                                        |
+      d2 bracket sign stop (i sign +) pro nest        "pro_last" (i stop ==) i ((d 0 ==) (pro_i bracket ==) &&)) >nest                           |
 
 (=out =pc =mem =mar =pro
   ((pro length) 1 -) =max
     (pro pc !!) =op
-      (pro mar mem (pc 1 +) out bf0 out (pc max ==)) >sub
-        sub (((0 "[" (-1) 0 (pc 1 -) pro nest) =pc sub) sub (pc 0 ==)) (op "]" ==)
-          (sub ((0 "]" 1 max (pc 1 +) pro nest)      =pc sub) (pc 0 ==)) (op "[" ==)
-            ((((mem mar !!) chr) out s.++)       =out sub) (op "." ==)
-              ((mem mar (-1) up_p)                 =mem sub) (op "-" ==)
-                ((mem mar 1 up_p)                    =mem sub) (op "+" ==)
-                  ((mar 1 -)                           =mar sub) (op "<" ==)
-                    ((mar 1 +)                           =mar sub)  (op ">" ==)) >bf0                            |
+      (pro mar mem (pc 1 +) out bf0 (out reverse) (pc max ==)) >sub
+        sub (((0 "[" -1 0 (pc 1 -) pro nest) =pc sub) sub ((mem mar !!) 0 ==)) (op "]" ==)
+          (sub ((0 "]" 1 max (pc 1 +) pro nest)    =pc sub) ((mem mar !!) 0 ==)) (op "[" ==)
+            ((out ((mem mar !!) chr) cons)                     =out sub) (op "." ==)
+              ((mem mar -1 up_p)                                 =mem sub) (op "-" ==)
+                ((mem mar 1 up_p)                                  =mem sub) (op "+" ==)
+                  ((mar 1 -)                                         =mar sub) (op "<" ==)
+                    ((mar 1 +)                                        =mar sub)  (op ">" ==)) >bf0 |
 
-("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.<.<.<.<.<.<.") =c |
- c 0 [88 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 0 "" bf0
+("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.<.<.<.<.<.<.") =c                            |
+c 0 [88 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 0 [] bf0
+; 再帰のスタックオーバーフローが出たのでおしまいっ！
