@@ -216,6 +216,7 @@ end
 
 # メイン関数としたもの
 if __FILE__ == $PROGRAM_NAME
+  # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
   emehcs = Emehcs.new
   repl = Repl.new emehcs
   repl.prelude
