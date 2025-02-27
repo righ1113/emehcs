@@ -1,10 +1,10 @@
 ; > loadFile ./sample/bf.eme
 
-(=pro =i =stop =sign =bracket =d
+(=pro =i =stop =sign ={} =d
   (pro i !!) =pro_i
-    (d (d sign -) (pro_i "}" ==) (d sign +) (pro_i "{" ==)) =d2
-      (d2 bracket sign stop (i sign +) pro # ("pro_edge" error) (i stop ==)) >rec
-        rec i ((d 0 ==) (pro_i bracket ==) &&)) >#                                |
+    (d (d sign -) (pro_i "}" ==) (d sign +) (pro_i "{" ==)) ; d_next
+      {} sign stop (i sign +) pro # ("pro_edge" error) (i stop ==)
+        i ((d 0 ==) (pro_i {} ==) &&)) >#                                         |
 
 (=out =pc =mem =mar =pro
   ((pro length) 1 -) =max
