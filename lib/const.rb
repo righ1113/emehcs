@@ -13,6 +13,7 @@ module Const
     'mod'    => :mod,
     '<'      => :lt,
     '=='     => :eq,
+    '!='     => :ne,
     'true'   => :my_true,
     'false'  => :my_false,
     '&&'     => :my_and,

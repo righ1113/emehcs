@@ -116,7 +116,7 @@ class EmehcsTest < Minitest::Test
     code35 = '"abcde" length'
     code36 = '88 chr'
     code37 = '[1 2 3] 1 100 up_p'
-    code38 = 'true true &&'
+    code38 = '(2 2 ==) (1 1 ==) &&'
 
     assert_equal '[1 2 3]',            (emehcs.run code28)
     assert_equal '[1 2 4]',            (emehcs.run code29)

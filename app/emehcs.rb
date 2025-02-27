@@ -54,6 +54,17 @@ class EmehcsBase
     [y1_ret, y2_ret]
   end
 
+  def common2_
+    y1 = @stack.pop; y2 = @stack.pop
+    raise '引数が不足しています' if y1.nil? || y2.nil?
+
+    @and_flg = true
+    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
+    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
+    @and_flg = false
+    [y1_ret, y2_ret]
+  end
+
   # (4) true/false でも :q チェック
   def my_true_false(bool)
     y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
@@ -78,8 +89,8 @@ class EmehcsBase
   end
 
   def my_and
-    y1, y2 = common2
-    p "y1=#{y1}, y2=#{y2}"
+    y1, y2 = common2_
+    # p "y1=#{y1}, y2=#{y2}"
     ret = y1 == y2 && y1 == 'true' ? 'true' : 'false'
     @stack.push ret
   end
@@ -96,6 +107,7 @@ class EmehcsBase
   def mod       = (y1, y2 = common2; @stack.push y2 % y1)
   def lt        = (y1, y2 = common2; @stack.push(y2 < y1 ? 'true' : 'false'))
   def eq        = (y1, y2 = common2; @stack.push(y2 == y1 ? 'true' : 'false'))
+  def ne        = (y1, y2 = common2; @stack.push(y2 != y1 ? 'true' : 'false'))
   def s_append  = (y1, y2 = common2; @stack.push y1[0..-3] + y2)
   def my_sample = (y1     = common1; @stack.push y1[0..-2].sample)
   def error     = (y1     = common1; @stack.push raise y1.to_s[0..-3])
@@ -146,7 +158,7 @@ class Emehcs < EmehcsBase
       else raise '予期しない型'
       end
       l = @stack.last
-      if l.is_a?(String) && %w[true false].include?(l) && !@stack[1..].empty? && xs.empty?
+      if l.is_a?(String) && %w[true false].include?(l) && !@stack[1..].empty? && xs.empty? && !@and_flg
         @stack.pop
         parse_run xs.unshift(l) # true/false が積まれたら、もう一回実行する
       else

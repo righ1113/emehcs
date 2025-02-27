@@ -4,7 +4,7 @@
   (pro i !!) =pro_i
     (d (d sign -) (pro_i "}" ==) (d sign +) (pro_i "{" ==)) =d2
       (d2 bracket sign stop (i sign +) pro # ("pro_edge" error) (i stop ==)) >rec
-        rec (rec i (d 0 ==)) (pro_i bracket ==)) >#                                  |
+        rec i ((d 0 ==) (pro_i bracket ==) &&)) >#                                |
 
 (=out =pc =mem =mar =pro
   ((pro length) 1 -) =max
@@ -12,15 +12,15 @@
       (0 "{" -1 0  (pc 1 -) pro #) >move_pc2
         (0 "}" 1 max (pc 1 +) pro #) >move_pc1
           (pro mar mem (pc 1 +) out bf0 (out reverse) (pc max ==)) >^
-            ^ ((move_pc2 =pc ^) ^ ((mem mar !!) 0 ==)) (op "}" ==)
-              (^   (move_pc1 =pc ^) ((mem mar !!) 0 ==)) (op "{" ==)
-                ((out ((mem mar !!) chr) cons)     =out ^) (op "." ==)
-                  ((mem mar -1 up_p)                 =mem ^) (op "-" ==)
-                    ((mem mar 1 up_p)                  =mem ^) (op "+" ==)
-                      ((mar 1 -)                         =mar ^) (op "<" ==)
-                        ((mar 1 +)                         =mar ^) (op ">" ==)) >bf0 |
+            ^ (move_pc2 =pc ^) (((mem mar !!) 0 !=) (op "}" ==) &&)
+                (move_pc1 =pc ^) (((mem mar !!) 0 ==) (op "{" ==) &&)
+                ((out ((mem mar !!) chr) cons)  =out ^) (op "." ==)
+                  ((mem mar -1 up_p)              =mem ^) (op "-" ==)
+                    ((mem mar 1 up_p)               =mem ^) (op "+" ==)
+                      ((mar 1 -)                      =mar ^) (op "<" ==)
+                        ((mar 1 +)                      =mar ^) (op ">" ==)) >bf0 |
 
-("+++++{->++++++<}>+++." =c)                                                         |
+("+++++{->++++++<}>+++." =c)                                                      |
 ; ("++++++++{>++++{>++>+++>+++>+<<<<-}>+>+>->>+{<}<-}>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++." =c) |
 c 0 [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 0 [] bf0
 ; 再帰のスタックオーバーフローが出たのでおしまいっ！
