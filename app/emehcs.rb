@@ -20,11 +20,7 @@ require './lib/repl'
 class EmehcsBase
   include Const
 
-  def initialize
-    @env   = {}
-    @stack = []
-    @code_len = 0
-  end
+  def initialize = (@env = {}; @stack = []; @code_len = 0)
 
   # abstract_method
   def parse_run(code)
@@ -38,31 +34,24 @@ class EmehcsBase
 
   private
 
-  def common1
-    y1 = @stack.pop
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil?
+  # スタックから count 個の要素を取り出して、評価する(実際に値を使用する前段階)
+  def common(count = 1)
+    values = Array.new(count) { @stack.pop }
+    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-  end
-
-  def common2
-    y1 = @stack.pop; y2 = @stack.pop
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
-
-    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
-    [y1_ret, y2_ret]
+    values = values.map do |y|
+      y.is_a?(Array) && y.last != :q ? parse_run(y) : y
+    end
+    # reverse して、count が 1 なら最初の要素を、そうでなければ配列全体を返す
+    # values.reverse!
+    count == 1 ? values.first : values
   end
 
   def common2_
-    y1 = @stack.pop; y2 = @stack.pop
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
-
     @and_flg = true
-    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
+    result = common(2)
     @and_flg = false
-    [y1_ret, y2_ret]
+    result
   end
 
   # (4) true/false でも :q チェック
@@ -96,35 +85,35 @@ class EmehcsBase
   end
 
   def index
-    y1, y2 = common2
+    y1, y2 = common(2)
     @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}"
   end
 
-  def plus      = (y1, y2 = common2; @stack.push y1 + y2)
-  def minus     = (y1, y2 = common2; @stack.push y2 - y1)
-  def mul       = (y1, y2 = common2; @stack.push y1 * y2)
-  def div       = (y1, y2 = common2; @stack.push y2 / y1)
-  def mod       = (y1, y2 = common2; @stack.push y2 % y1)
-  def lt        = (y1, y2 = common2; @stack.push(y2 < y1 ? 'true' : 'false'))
-  def eq        = (y1, y2 = common2; @stack.push(y2 == y1 ? 'true' : 'false'))
-  def ne        = (y1, y2 = common2; @stack.push(y2 != y1 ? 'true' : 'false'))
-  def s_append  = (y1, y2 = common2; @stack.push y1[0..-3] + y2)
-  def my_sample = (y1     = common1; @stack.push y1[0..-2].sample)
-  def error     = (y1     = common1; @stack.push raise y1.to_s[0..-3])
-  def car       = (y1     = common1; z = y1[0..-2]; @stack.push z[0])
-  def cdr       = (y1     = common1; @stack.push y1[1..])
-  def cons      = (y1, y2 = common2; @stack.push y2.unshift(y1);)
+  def plus      = (@stack.push common(2).reduce(:+))
+  def minus     = (y1, y2 = common(2); @stack.push y2 - y1)
+  def mul       = (@stack.push common(2).reduce(:*))
+  def div       = (y1, y2 = common(2); @stack.push y2 / y1)
+  def mod       = (y1, y2 = common(2); @stack.push y2 % y1)
+  def lt        = (y1, y2 = common(2); @stack.push(y2 < y1 ? 'true' : 'false'))
+  def eq        = (y1, y2 = common(2); @stack.push(y2 == y1 ? 'true' : 'false'))
+  def ne        = (y1, y2 = common(2); @stack.push(y2 != y1 ? 'true' : 'false'))
+  def s_append  = (y1, y2 = common(2); @stack.push y1[0..-3] + y2)
+  def my_sample = (@stack.push common(1)[0..-2].sample)
+  def error     = (@stack.push raise common(1).to_s[0..-3])
+  def car       = (y1 = common(1); z = y1[0..-2]; @stack.push z[0])
+  def cdr       = (@stack.push common(1)[1..])
+  def cons      = (y1, y2 = common(2); @stack.push y2.unshift(y1);)
   def my_true   = my_true_false true
   def my_false  = my_true_false false
   def timer1    = timer 1
   def timer2    = timer 2
-  def cmd       = (y1 = common1; system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
+  def cmd       = (y1 = common(1); system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
   # 末尾の :q を除く
-  def eval      = (y1 = common1; @code_len = 0; @stack.push parse_run(y1[0..-2]))
-  def eq2       = (y1, y2 = common2; @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
-  def length    = (y1     = common1; @stack.push y1.length - 2)
-  def chr       = (y1     = common1; @stack.push y1.chr)
-  def up_p      = (y1, y2 = common2; y3 = common1; y3[y2] += y1; @stack.push y3)
+  def eval      = (y1 = common(1); @code_len = 0; @stack.push parse_run(y1[0..-2]))
+  def eq2       = (y1, y2 = common(2); @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
+  def length    = (@stack.push common(1).length - 2)
+  def chr       = (@stack.push common(1).chr)
+  def up_p      = (y1, y2 = common(2); y3 = common(1); y3[y2] += y1; @stack.push y3)
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -150,12 +139,8 @@ class Emehcs < EmehcsBase
     end
   end
 
-  def run(str_code) = (@stack = []; run_after(parse_run(parse2(str_code)).to_s))
-
+  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
   def reset_env = (@env = {})
-
-  # 文字列code から 配列code へ変換
-  def parse2(str) = parse2_core str
 
   private
 
@@ -183,14 +168,14 @@ class Emehcs < EmehcsBase
   end
 
   def parse_string(x, em)
-    if    EMEHCS_FUNC_TABLE.key? x
-      if %w[true false].include?(x)
+    if EMEHCS_FUNC_TABLE.key? x
+      if TRUE_FALSE_VALUES.include?(x)
         em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)
       else
         em.empty? ?                   send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
       end
     elsif EMEHCS_FUNC_TABLE.key? @env[x]
-      if %w[true false].include?(@env[x])
+      if TRUE_FALSE_VALUES.include?(@env[x])
         em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
       else
         em.empty? ?                   send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
