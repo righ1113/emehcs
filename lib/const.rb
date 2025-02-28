@@ -35,6 +35,16 @@ module Const
     'up_p'   => :up_p
   }.freeze
 
+  ERROR_MESSAGES = {
+    insufficient_args: '引数が不足しています',
+    unexpected_type:   '予期しない型'
+  }.freeze
+
+  SPECIAL_STRING_SUFFIX = ':s'
+  FUNCTION_DEF_PREFIX   = '>'
+  VARIABLE_DEF_PREFIX   = '='
+  TRUE_FALSE_VALUES     = %w[true false].freeze
+
   # Const クラス
   class Const
     def self.deep_copy(arr)
