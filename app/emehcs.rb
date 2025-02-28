@@ -16,66 +16,9 @@ require './lib/const'
 require './lib/parse2_core'
 require './lib/repl'
 
-# EmehcsBase クラス
-class EmehcsBase
+# Primitive 関数
+module Primitive
   include Const
-
-  def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
-  # abstract_method
-  def parse_run(code) = raise NotImplementedError, 'Subclasses must implement abstract_method'
-  # abstract_method
-  def run_after(str)  = raise NotImplementedError, 'Subclasses must implement abstract_method'
-
-  private
-
-  # スタックから count 個の要素を取り出して、評価する(実際に値を使用する前段階)
-  def common(count = 1)
-    values = Array.new(count) { @stack.pop }
-    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
-
-    values = values.map do |y|
-      y.is_a?(Array) && y.last != :q ? parse_run(y) : y
-    end
-    # reverse して、count が 1 なら最初の要素を、そうでなければ配列全体を返す
-    # values.reverse!
-    count == 1 ? values.first : values
-  end
-
-  def common2_
-    @and_flg = true
-    result = common(2)
-    @and_flg = false
-    result
-  end
-
-  # (4) true/false でも :q チェック
-  def my_true_false(bool)
-    y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
-
-    y3 = bool ? y1 : y2
-    y3.is_a?(Array) && y3.last != :q ? @stack.push(parse_run(y3)) : @stack.push(y3)
-  end
-
-  def timer(mode)
-    y1 = @stack.pop; y2 = @stack.pop
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
-
-    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-    y1_ret = (Time.parse(y1_ret) - Time.now).to_i if mode == 2
-    sleep y1_ret
-    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
-    @stack.push y2_ret
-  end
-
-  def my_and
-    y1, y2 = common2_
-    # p "y1=#{y1}, y2=#{y2}"
-    ret = y1 == y2 && y1 == 'true' ? 'true' : 'false'
-    @stack.push ret
-  end
-
-  def index = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
 
   def plus      = (@stack.push common(2).reduce(:+))
   def minus     = (y1, y2 = common(2); @stack.push y2 - y1)
@@ -102,6 +45,58 @@ class EmehcsBase
   def length    = (@stack.push common(1).length - 2)
   def chr       = (@stack.push common(1).chr)
   def up_p      = (y1, y2, y3 = common(3); y3[y2] += y1; @stack.push y3)
+  def index     = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
+end
+
+# EmehcsBase クラス
+class EmehcsBase
+  include Const
+  include Primitive
+
+  def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
+  # abstract_method
+  def parse_run(code) = raise NotImplementedError, 'Subclasses must implement abstract_method'
+  # abstract_method
+  def run_after(str)  = raise NotImplementedError, 'Subclasses must implement abstract_method'
+
+  private
+
+  # スタックから count 個の要素を取り出して、評価する(実際に値を使用する前段階)
+  def common(count = 1)
+    values = Array.new(count) { @stack.pop }
+    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
+
+    values = values.map { |y| y.is_a?(Array) && y.last != :q ? parse_run(y) : y }
+    count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
+  end
+
+  def common2_ = (@and_flg = true; result = common(2); @and_flg = false; result)
+
+  # (4) true/false でも :q チェック
+  def my_true_false(bool)
+    y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
+    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
+
+    y3 = bool ? y1 : y2
+    y3.is_a?(Array) && y3.last != :q ? @stack.push(parse_run(y3)) : @stack.push(y3)
+  end
+
+  def timer(mode)
+    y1 = @stack.pop; y2 = @stack.pop
+    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
+
+    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
+    y1_ret = (Time.parse(y1_ret) - Time.now).to_i if mode == 2
+    sleep y1_ret
+    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
+    @stack.push y2_ret
+  end
+
+  def my_and
+    y1, y2 = common2_
+    # p "y1=#{y1}, y2=#{y2}"
+    @stack.push(y1 == y2 && y1 == 'true' ? 'true' : 'false')
+  end
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -171,16 +166,14 @@ class Emehcs < EmehcsBase
     if em && @env[x].last != :q
       @code_len = 0; @stack.push parse_run Const.deep_copy(@env[x])
     else
-                     @stack.push           Const.deep_copy(@env[x])
+      @stack.push Const.deep_copy(@env[x])
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em) = (@code_len += @stack.length; em && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
-
-  def pop_raise
-    pop = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pop.nil?; pop
-  end
+  # pop_raise
+  def pop_raise = (pop = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pop.nil?; pop)
 end
 
 # メイン関数としたもの
