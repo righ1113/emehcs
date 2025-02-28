@@ -20,17 +20,11 @@ require './lib/repl'
 class EmehcsBase
   include Const
 
-  def initialize = (@env = {}; @stack = []; @code_len = 0)
-
+  def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
   # abstract_method
-  def parse_run(code)
-    raise NotImplementedError, 'Subclasses must implement abstract_method'
-  end
-
+  def parse_run(code) = raise NotImplementedError, 'Subclasses must implement abstract_method'
   # abstract_method
-  def run_after(str)
-    raise NotImplementedError, 'Subclasses must implement abstract_method'
-  end
+  def run_after(str)  = raise NotImplementedError, 'Subclasses must implement abstract_method'
 
   private
 
@@ -59,11 +53,8 @@ class EmehcsBase
     y1 = @stack.pop; y2 = @stack.pop # 2コ 取り出す
     raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
 
-    if bool
-      y1.is_a?(Array) && y1.last != :q ? @stack.push(parse_run(y1)) : @stack.push(y1)
-    else
-      y2.is_a?(Array) && y2.last != :q ? @stack.push(parse_run(y2)) : @stack.push(y2)
-    end
+    y3 = bool ? y1 : y2
+    y3.is_a?(Array) && y3.last != :q ? @stack.push(parse_run(y3)) : @stack.push(y3)
   end
 
   def timer(mode)
@@ -84,10 +75,7 @@ class EmehcsBase
     @stack.push ret
   end
 
-  def index
-    y1, y2 = common(2)
-    @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}"
-  end
+  def index = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
 
   def plus      = (@stack.push common(2).reduce(:+))
   def minus     = (y1, y2 = common(2); @stack.push y2 - y1)
@@ -113,7 +101,7 @@ class EmehcsBase
   def eq2       = (y1, y2 = common(2); @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
   def length    = (@stack.push common(1).length - 2)
   def chr       = (@stack.push common(1).chr)
-  def up_p      = (y1, y2 = common(2); y3 = common(1); y3[y2] += y1; @stack.push y3)
+  def up_p      = (y1, y2, y3 = common(3); y3[y2] += y1; @stack.push y3)
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
@@ -122,25 +110,23 @@ class Emehcs < EmehcsBase
 
   # メインルーチンの改善
   def parse_run(code)
-    @code_len = code.length if @code_len.zero?
-
+    @code_len = code.length if @code_len.zero? # コード長の初期化
     case code
     in [] then handle_empty_code
     in [x, *xs]
       case x
       in Integer then handle_integer(x)
-      in String  then x == 'list' ? handle_list : parse_string(x, xs)
-      in Array   then parse_array(x, xs)
+      in String  then x == 'list' ? handle_list : parse_string(x, xs.empty?)
+      in Array   then parse_array(x, xs.empty?)
       in Symbol  then nil # do nothing
       else raise ERROR_MESSAGES[:unexpected_type]
       end
-
       handle_true_false_condition(@stack.last, xs)
     end
   end
 
   def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
-  def reset_env = (@env = {})
+  def reset_env     = (@env = {})
 
   private
 
@@ -149,71 +135,51 @@ class Emehcs < EmehcsBase
 
   def handle_list
     s = Const.deep_copy(@stack.pop(@code_len - 1))
-    s.map! do |n|
-      n.is_a?(Array) && n.last != :q ? (@stack.shift; parse_run(n)) : parse_run([n])
-    end
-    @code_len = 0
-    s.push(:q)
-    @stack.push s
+    s.map! { |n| n.is_a?(Array) && n.last != :q ? (@stack.shift; parse_run(n)) : parse_run([n]) }
+    @code_len = 0; s.push(:q); @stack.push s
   end
 
   def handle_true_false_condition(last, xs)
-    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) &&
-       !@stack[1..].empty? && xs.empty? && !@and_flg
-      @stack.pop
-      parse_run xs.unshift(last)
+    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && !@and_flg
+      @stack.pop                 # true/false をスタックから消す
+      parse_run xs.unshift(last) # true/false の関数動作
     else
-      parse_run xs
+      parse_run xs               # メインルーチンの再帰をここで行う
     end
   end
 
-  def parse_string(x, em)
-    if EMEHCS_FUNC_TABLE.key? x
-      if TRUE_FALSE_VALUES.include?(x)
-        em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)
-      else
-        em.empty? ?                   send(EMEHCS_FUNC_TABLE[x]) : @stack.push(x)             # プリミティブ関数実行1
-      end
+  def parse_string(x, em, tf = !(TRUE_FALSE_VALUES.include?(x) && @stack.empty?))
+    if    EMEHCS_FUNC_TABLE.key? x
+      em && tf ? send(EMEHCS_FUNC_TABLE[x])       : @stack.push(x) # true/false 単体時は関数として扱わない
     elsif EMEHCS_FUNC_TABLE.key? @env[x]
-      if TRUE_FALSE_VALUES.include?(@env[x])
-        em.empty? && !@stack.empty? ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
-      else
-        em.empty? ?                   send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x]) # プリミティブ関数実行2
-      end
-    elsif x[-2..] == SPECIAL_STRING_SUFFIX # 純粋文字列
-      @stack.push x
-    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' # 関数定義
-      @env[x[1..]] = pop_raise
-      @stack.push x[1..] if em.empty? # REPL に関数名を出力する
-    elsif x[0] == VARIABLE_DEF_PREFIX # 変数定義
+      em && tf ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
+    elsif x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
+    elsif x[0]    == FUNCTION_DEF_PREFIX && x != '>>>' then (@env[x[1..]] = pop_raise; em && @stack.push(x[1..]))
+    elsif x[0]    == VARIABLE_DEF_PREFIX # 変数定義
       pop = pop_raise
       # (3) 変数定義のときは、Array を実行する
       @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
-      @stack.push x[1..] if em.empty? # REPL に変数名を出力する
-    elsif @env[x].is_a?(Array)
-      # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-      if em.empty? && @env[x].last != :q
-        @code_len = 0
-        @stack.push parse_run Const.deep_copy(@env[x])
-      else
-        @stack.push           Const.deep_copy(@env[x])
-      end
+      em && @stack.push(x[1..]) # REPL に変数名を出力する
+    elsif @env[x].is_a?(Array) then parse_string_env_array x, em
     else
       @stack.push @env[x] # ふつうの name
     end
   end
 
-  # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em)
-    @code_len += @stack.length
-    em.empty? && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x)
+  # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
+  def parse_string_env_array(x, em)
+    if em && @env[x].last != :q
+      @code_len = 0; @stack.push parse_run Const.deep_copy(@env[x])
+    else
+                     @stack.push           Const.deep_copy(@env[x])
+    end
   end
 
-  def pop_raise
-    pop = @stack.pop
-    raise '引数が不足しています' if pop.nil?
+  # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
+  def parse_array(x, em) = (@code_len += @stack.length; em && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
 
-    pop
+  def pop_raise
+    pop = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pop.nil?; pop
   end
 end
 
