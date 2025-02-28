@@ -105,12 +105,12 @@ class EmehcsTest < Minitest::Test
 
   def test_case3
     emehcs = Emehcs.new
-    # code28 = '1 =x x (x 1 +) (x 2 +) list'
-    # code29 = '1 (=x x (x 1 +) (x 3 +) list)'
-    # code30 = '(3 5 7 list) 55 1 2 list'
-    # code31 = '[1 2] list'
-    # emehcs.run '(=x x "hoge" list) >v'
-    # code32 = '7 v'
+    code28 = '1 =x x (x 1 +) (x 2 +) list'
+    code29 = '1 (=x x (x 1 +) (x 3 +) list)'
+    code30 = '(3 5 7 list) 55 1 2 list'
+    code31 = '[1 2] list'
+    emehcs.run '(=x x "hoge" list) >v'
+    code32 = '7 v'
     code33 = 'false true &&'
     code34 = '"abcde" 2 !!'
     code35 = '"abcde" length'
@@ -118,11 +118,11 @@ class EmehcsTest < Minitest::Test
     code37 = '[1 2 3] 1 100 up_p'
     code38 = '(2 2 ==) (1 1 ==) &&'
 
-    # assert_equal '[1 2 3]',            (emehcs.run code28)
-    # assert_equal '[1 2 4]',            (emehcs.run code29)
-    # assert_equal '[[3 5 7] 55 1 2]',   (emehcs.run code30)
-    # assert_equal '[[1 2]]',            (emehcs.run code31)
-    # assert_equal '[7 "hoge"]',         (emehcs.run code32)
+    assert_equal '[1 2 3]',            (emehcs.run code28)
+    assert_equal '[1 2 4]',            (emehcs.run code29)
+    assert_equal '[[3 5 7] 55 1 2]',   (emehcs.run code30)
+    assert_equal '[[1 2]]',            (emehcs.run code31)
+    assert_equal '[7 "hoge"]',         (emehcs.run code32)
     assert_equal 'false',              (emehcs.run code33)
     assert_equal '"c"',                (emehcs.run code34)
     assert_equal '5',                  (emehcs.run code35)

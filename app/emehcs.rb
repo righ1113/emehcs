@@ -159,14 +159,8 @@ class Emehcs < EmehcsBase
 
   private
 
-  def handle_empty_code
-    @code_len = 0
-    @stack.pop
-  end
-
-  def handle_integer(x)
-    @stack.push x
-  end
+  def handle_empty_code = (@code_len = 0; @stack.pop)
+  def handle_integer(x) = @stack.push x
 
   def handle_list
     s = Const.deep_copy(@stack.pop(@code_len - 1))
@@ -175,6 +169,7 @@ class Emehcs < EmehcsBase
     end
     @code_len = 0
     s.push(:q)
+    @stack.push s
   end
 
   def handle_true_false_condition(last, xs)
