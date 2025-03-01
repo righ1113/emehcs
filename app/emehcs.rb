@@ -11,7 +11,6 @@
 # $ bundle exec ruby app/emehcs.rb
 # > [ctrl]+D か exit で終了
 
-require 'time'
 require './lib/const'
 require './lib/parse2_core'
 require './lib/repl'
@@ -19,12 +18,7 @@ require './lib/repl'
 # EmehcsBase クラス
 class EmehcsBase
   include Const
-
   def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
-  # abstract_method
-  def parse_run(code) = raise NotImplementedError, 'Subclasses must implement abstract_method'
-  # abstract_method
-  def run_after(str)  = raise NotImplementedError, 'Subclasses must implement abstract_method'
 
   private
 
@@ -47,31 +41,22 @@ class EmehcsBase
     y3 = bool ? y1 : y2
     y3.is_a?(Array) && y3.last != :q ? @stack.push(parse_run(y3)) : @stack.push(y3)
   end
-
-  def timer(mode)
-    y1 = @stack.pop; y2 = @stack.pop
-    raise ERROR_MESSAGES[:insufficient_args] if y1.nil? || y2.nil?
-
-    y1_ret = y1.is_a?(Array) && y1.last != :q ? parse_run(y1) : y1
-    y1_ret = (Time.parse(y1_ret) - Time.now).to_i if mode == 2
-    sleep y1_ret
-    y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
-    @stack.push y2_ret
-  end
 end
 
 # Emehcs クラス 相互に呼び合っているから、継承しかないじゃん
 class Emehcs < EmehcsBase
   include Parse2Core
+  def reset_env     = (@env = {})
+  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
 
   # メインルーチンの改善
   def parse_run(code)
     @code_len = code.length if @code_len.zero? # コード長の初期化
     case code
-    in [] then handle_empty_code
+    in [] then @code_len = 0; @stack.pop
     in [x, *xs]
       case x
-      in Integer then handle_integer(x)
+      in Integer then @stack.push x
       in String  then x == 'list' ? handle_list : parse_string(x, xs.empty?)
       in Array   then parse_array(x, xs.empty?)
       in Symbol  then nil # do nothing
@@ -81,13 +66,7 @@ class Emehcs < EmehcsBase
     end
   end
 
-  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
-  def reset_env     = (@env = {})
-
   private
-
-  def handle_empty_code = (@code_len = 0; @stack.pop)
-  def handle_integer(x) = @stack.push x
 
   def handle_list
     s = Const.deep_copy(@stack.pop(@code_len - 1))
@@ -133,8 +112,6 @@ class Emehcs < EmehcsBase
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em) = (@code_len += @stack.length; em && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
-  # pop_raise
-  def pop_raise = (pop = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pop.nil?; pop)
 end
 
 # メイン関数としたもの
