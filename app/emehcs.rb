@@ -18,20 +18,20 @@ require './lib/repl'
 # EmehcsBase クラス
 class EmehcsBase
   include Const
-  def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
+  def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = 0)
 
   private
 
   # スタックから count 個の要素を取り出して、評価する(実際に値を使用する前段階)
-  def common(count = 1)
+  def common(count = 1, af = 0)
+    @and_flg += af
     values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    values = values.map { |y| y.is_a?(Array) && y.last != :q ? parse_run(y) : y }
+    values.map! { |y| y.is_a?(Array) && y.last != :q ? parse_run(y) : y }
+    @and_flg -= af
     count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
   end
-
-  def common2_ = (@and_flg = true; result = common(2); @and_flg = false; result)
 
   # (4) true/false でも :q チェック
   def my_true_false(bool)
@@ -75,7 +75,7 @@ class Emehcs < EmehcsBase
   end
 
   def handle_true_false_condition(last, xs)
-    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && !@and_flg
+    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && @and_flg.zero?
       parse_run [@stack.pop] # true/false をスタックから消して、関数動作
     else
       parse_run xs           # メインルーチンの再帰をここで行う
