@@ -54,7 +54,7 @@ class Emehcs < EmehcsBase
     @code_len = code.length if @code_len.zero? # コード長の初期化
     case code
     in [] then @code_len = 0; @stack.pop
-    in [x, *xs]
+    in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
       in String  then x == 'list' ? handle_list : parse_string(x, xs.empty?)
@@ -62,7 +62,7 @@ class Emehcs < EmehcsBase
       in Symbol  then nil # do nothing
       else raise ERROR_MESSAGES[:unexpected_type]
       end
-      handle_true_false_condition(@stack.last, xs)
+      handle_t_f_c(@stack.last, xs)
     end
   end
 
@@ -74,13 +74,8 @@ class Emehcs < EmehcsBase
     @code_len = 0; s.push(:q); @stack.push s
   end
 
-  def handle_true_false_condition(last, xs)
-    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && @and_flg.zero?
-      parse_run [@stack.pop] # true/false をスタックから消して、関数動作
-    else
-      parse_run xs           # メインルーチンの再帰をここで行う
-    end
-  end
+  def handle_t_f_c(l, xs, b = TRUE_FALSE_VALUES.include?(l) && !@stack[1..].empty? && xs.empty? && @and_flg.zero?) =
+    b ? parse_run([@stack.pop]) : parse_run(xs) # メインルーチンの再帰をここで行う
 
   def parse_string(x, em, tf = !(TRUE_FALSE_VALUES.include?(x) && @stack.empty?))
     if    EMEHCS_FUNC_TABLE.key? x
@@ -101,13 +96,8 @@ class Emehcs < EmehcsBase
   end
 
   # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_string_env_array(x, em)
-    if em && @env[x].last != :q
-      @code_len = 0; @stack.push parse_run Const.deep_copy(@env[x])
-    else
-      @stack.push Const.deep_copy(@env[x])
-    end
-  end
+  def parse_string_env_array(x, em, b = em && @env[x].last != :q) =
+    b ? (@code_len = 0; @stack.push parse_run Const.deep_copy(@env[x])) : @stack.push(Const.deep_copy(@env[x]))
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
   def parse_array(x, em) = (@code_len += @stack.length; em && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
