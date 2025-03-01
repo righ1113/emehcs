@@ -49,21 +49,20 @@ class Emehcs < EmehcsBase
   def reset_env     = (@env = {})
   def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
 
-  # メインルーチンの改善
+  # メインルーチン、ある階層の配列を一気に処理する
   def parse_run(code)
     @code_len = code.length if @code_len.zero? # コード長の初期化
-    case code
-    in [] then @code_len = 0; @stack.pop
-    in [x, *xs]
+    code.each_with_index do |x, i|
+      is_last = i == code.length - 1
       case x
       in Integer then @stack.push x
-      in String  then x == 'list' ? handle_list : parse_string(x, xs.empty?)
-      in Array   then parse_array(x, xs.empty?)
+      in String  then x == 'list' ? handle_list : parse_string(x, is_last)
+      in Array   then parse_array(x, is_last)
       in Symbol  then nil # do nothing
       else raise ERROR_MESSAGES[:unexpected_type]
       end
-      handle_true_false_condition(@stack.last, xs)
     end
+    handle_true_false_condition @stack.last
   end
 
   private
@@ -74,11 +73,11 @@ class Emehcs < EmehcsBase
     @code_len = 0; s.push(:q); @stack.push s
   end
 
-  def handle_true_false_condition(last, xs)
-    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && @and_flg.zero?
-      parse_run [@stack.pop] # true/false をスタックから消して、関数動作
+  def handle_true_false_condition(last)
+    if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && @and_flg.zero?
+      parse_run [@stack.pop]    # true/false をスタックから消して、関数動作
     else
-      parse_run xs           # メインルーチンの再帰をここで行う
+      @code_len = 0; @stack.pop # メインルーチンの終了処理をここで行う
     end
   end
 
