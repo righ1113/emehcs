@@ -77,14 +77,15 @@ class Emehcs < EmehcsBase
   def handle_t_f_c(l, xs, b = TRUE_FALSE_VALUES.include?(l) && !@stack[1..].empty? && xs.empty? && @and_flg.zero?) =
     b ? parse_run([@stack.pop]) : parse_run(xs) # メインルーチンの再帰をここで行う
 
-  def parse_string(x, em, tf = !(TRUE_FALSE_VALUES.include?(x) && @stack.empty?))
-    if    EMEHCS_FUNC_TABLE.key? x
-      em && tf ? send(EMEHCS_FUNC_TABLE[x])       : @stack.push(x) # true/false 単体時は関数として扱わない
-    elsif EMEHCS_FUNC_TABLE.key? @env[x]
-      em && tf ? send(EMEHCS_FUNC_TABLE[@env[x]]) : @stack.push(@env[x])
-    elsif x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
-    elsif x[0]    == FUNCTION_DEF_PREFIX && x != '>>>' then (@env[x[1..]] = pop_raise; em && @stack.push(x[1..]))
-    elsif x[0]    == VARIABLE_DEF_PREFIX # 変数定義
+  def parse_string(x, em, db = [x, @env[x]], tf = !(TRUE_FALSE_VALUES.include?(x) && @stack.empty?))
+    db.each do |y|
+      if EMEHCS_FUNC_TABLE.key? y
+        em && tf ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1 # true/false 単体時は関数として扱わない
+      end
+    end
+    if x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
+    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' then (@env[x[1..]] = pop_raise; em && @stack.push(x[1..]))
+    elsif x[0] == VARIABLE_DEF_PREFIX # 変数定義
       pop = pop_raise
       # (3) 変数定義のときは、Array を実行する
       @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
