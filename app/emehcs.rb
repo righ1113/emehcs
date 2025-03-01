@@ -76,10 +76,9 @@ class Emehcs < EmehcsBase
 
   def handle_true_false_condition(last, xs)
     if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && !@and_flg
-      @stack.pop       # true/false をスタックから消す
-      parse_run [last] # true/false の関数動作
+      parse_run [@stack.pop] # true/false をスタックから消して、関数動作
     else
-      parse_run xs     # メインルーチンの再帰をここで行う
+      parse_run xs           # メインルーチンの再帰をここで行う
     end
   end
 
