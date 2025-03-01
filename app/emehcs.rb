@@ -16,42 +16,9 @@ require './lib/const'
 require './lib/parse2_core'
 require './lib/repl'
 
-# Primitive 関数
-module Primitive
-  include Const
-
-  def plus      = (@stack.push common(2).reduce(:+))
-  def minus     = (y1, y2 = common(2); @stack.push y2 - y1)
-  def mul       = (@stack.push common(2).reduce(:*))
-  def div       = (y1, y2 = common(2); @stack.push y2 / y1)
-  def mod       = (y1, y2 = common(2); @stack.push y2 % y1)
-  def lt        = (y1, y2 = common(2); @stack.push(y2 < y1 ? 'true' : 'false'))
-  def eq        = (y1, y2 = common(2); @stack.push(y2 == y1 ? 'true' : 'false'))
-  def ne        = (y1, y2 = common(2); @stack.push(y2 != y1 ? 'true' : 'false'))
-  def s_append  = (y1, y2 = common(2); @stack.push y1[0..-3] + y2)
-  def my_sample = (@stack.push common(1)[0..-2].sample)
-  def error     = (@stack.push raise common(1).to_s[0..-3])
-  def car       = (y1 = common(1); z = y1[0..-2]; @stack.push z[0])
-  def cdr       = (@stack.push common(1)[1..])
-  def cons      = (y1, y2 = common(2); @stack.push y2.unshift(y1);)
-  def my_true   = my_true_false true
-  def my_false  = my_true_false false
-  def timer1    = timer 1
-  def timer2    = timer 2
-  def cmd       = (y1 = common(1); system(y1[0..-3].gsub('%', ' ')); @stack.push($?))
-  # 末尾の :q を除く
-  def eval      = (y1 = common(1); @code_len = 0; @stack.push parse_run(y1[0..-2]))
-  def eq2       = (y1, y2 = common(2); @stack.push(run_after(y2.to_s) == run_after(y1.to_s) ? 'true' : 'false'))
-  def length    = (@stack.push common(1).length - 2)
-  def chr       = (@stack.push common(1).chr)
-  def up_p      = (y1, y2, y3 = common(3); y3[y2] += y1; @stack.push y3)
-  def index     = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
-end
-
 # EmehcsBase クラス
 class EmehcsBase
   include Const
-  include Primitive
 
   def initialize = (@env = {}; @stack = []; @code_len = 0; @and_flg = false)
   # abstract_method
@@ -90,12 +57,6 @@ class EmehcsBase
     sleep y1_ret
     y2_ret = y2.is_a?(Array) && y2.last != :q ? parse_run(y2) : y2
     @stack.push y2_ret
-  end
-
-  def my_and
-    y1, y2 = common2_
-    # p "y1=#{y1}, y2=#{y2}"
-    @stack.push(y1 == y2 && y1 == 'true' ? 'true' : 'false')
   end
 end
 
@@ -136,10 +97,10 @@ class Emehcs < EmehcsBase
 
   def handle_true_false_condition(last, xs)
     if last.is_a?(String) && TRUE_FALSE_VALUES.include?(last) && !@stack[1..].empty? && xs.empty? && !@and_flg
-      @stack.pop                 # true/false をスタックから消す
-      parse_run xs.unshift(last) # true/false の関数動作
+      @stack.pop       # true/false をスタックから消す
+      parse_run [last] # true/false の関数動作
     else
-      parse_run xs               # メインルーチンの再帰をここで行う
+      parse_run xs     # メインルーチンの再帰をここで行う
     end
   end
 
