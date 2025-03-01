@@ -17,11 +17,11 @@ class EmehcsTestB < Minitest::Test
     code5  = [['=x', [1, 8, '+']], '>fact', 4, 'fact']
     code6  = [['=x', 'x'], '>id', 4, 'id']
     code7  = [['=x', [1, 'x', '+']], '>fact', 4, 'fact']
-    # code8  = [['=x', [[['x', 1, '-'], 'fact'], 'x', '*'], 1, 'true'], '>fact', 4, 'fact']
-    # code9  = [['=x', [[['x', 1, '-'], 'fact'], 'x', '*'], 1, ['x', 1, '<']], '>fact', 4, 'fact']
-    # code10 = [5, 'fact']
-    # code11 = [[1, 2, 3, :q], 'id']
-    # code12 = [[1, 2, 3, :q], '=dat', 'dat', 'id']
+    code8  = [['=x', [[['x', 1, '-'], 'fact'], 'x', '*'], 1, 'true', '?'], '>fact', 4, 'fact']
+    code9  = [['=x', [[['x', 1, '-'], 'fact'], 'x', '*'], 1, ['x', 1, '<'], '?'], '>fact', 4, 'fact']
+    code10 = [5, 'fact']
+    code11 = [[1, 2, 3, :q], 'id']
+    code12 = [[1, 2, 3, :q], '=dat', 'dat', 'id']
 
     assert_equal 3,   (emehcs.parse_run code1)
     assert_equal 11,  (emehcs.parse_run code2)
@@ -30,11 +30,11 @@ class EmehcsTestB < Minitest::Test
     assert_equal 9,   (emehcs.parse_run code5)
     assert_equal 4,   (emehcs.parse_run code6)
     assert_equal 5,   (emehcs.parse_run code7)
-    # assert_equal 1,   (emehcs.parse_run code8)
-    # assert_equal 24,  (emehcs.parse_run code9)
-    # assert_equal 120, (emehcs.parse_run code10)
-    # assert_equal [1, 2, 3, :q],        (emehcs.parse_run code11)
-    # assert_equal [1, 2, 3, :q],        (emehcs.parse_run code12)
+    assert_equal 1,   (emehcs.parse_run code8)
+    assert_equal 24,  (emehcs.parse_run code9)
+    assert_equal 120, (emehcs.parse_run code10)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code11)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code12)
   end
 
   # def test_case2

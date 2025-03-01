@@ -18,7 +18,7 @@ require './lib/repl'
 # EmehcsBaseB クラス
 class EmehcsBaseB
   include ConstB
-  def initialize = (@env = {}; @stack = [])
+  def initialize = (@env = { 'true' => 'true', 'false' => 'false' }; @stack = [])
 
   private
 
@@ -30,12 +30,19 @@ class EmehcsBaseB
     values.map! { |y| y.is_a?(Array) && y.last != :q ? parse_run(y) : y }
     count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
   end
+
+  # if
+  def my_if
+    values = Array.new(3) { @stack.pop }
+    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
+
+    @stack.push parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : parse_run([values[2]])
+  end
 end
 
 # EmehcsB クラス 相互に呼び合っているから、継承しかないじゃん
 class EmehcsB < EmehcsBaseB
   include Parse2Core
-  def reset_env     = (@env = {})
   def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
 
   # メインルーチンの改善
@@ -56,10 +63,10 @@ class EmehcsB < EmehcsBaseB
 
   private
 
-  def parse_string(x, em, db = [x, @env[x]], tf = !(TRUE_FALSE_VALUES.include?(x) && @stack.empty?))
+  def parse_string(x, em, db = [x, @env[x]])
     db.each do |y|
       if EMEHCS_FUNC_TABLE.key? y
-        em && tf ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1 # true/false 単体時は関数として扱わない
+        em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1
       end
     end
     if x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
@@ -85,8 +92,9 @@ end
 # メイン関数としたもの
 if __FILE__ == $PROGRAM_NAME
   # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
-  p 'ahaha'
-  # emehcs = EmehcsB.new
+
+  emehcs = EmehcsB.new
+  p emehcs.parse_run([1, 2, 'true', '?'])
   # repl = Repl.new emehcs
   # repl.prelude
   # repl.repl

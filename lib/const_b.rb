@@ -29,7 +29,8 @@ module ConstB
     '!!'     => :index,
     'length' => :length,
     'chr'    => :chr,
-    'up_p'   => :up_p
+    'up_p'   => :up_p,
+    '?'      => :my_if
   }.freeze
 
   ERROR_MESSAGES = {
