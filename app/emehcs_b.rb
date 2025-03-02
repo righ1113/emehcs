@@ -52,8 +52,8 @@ class EmehcsB < EmehcsBaseB
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
-      in String  then parse_string(x, xs.empty?)
-      in Array   then parse_array(x, xs.empty?)
+      in String  then parse_string x, xs.empty?
+      in Array   then parse_array  x, xs.empty?
       in Symbol  then nil # do nothing
       else raise ERROR_MESSAGES[:unexpected_type]
       end
@@ -63,22 +63,14 @@ class EmehcsB < EmehcsBaseB
 
   private
 
-  def parse_string(x, em, db = [x, @env[x]])
-    db.each do |y|
-      if EMEHCS_FUNC_TABLE.key? y
-        em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1
-      end
-    end
+  def parse_string(x, em, db = [x, @env[x]], b = em && @env[x].is_a?(Array) && @env[x].last != :q)
+    db.each { |y| (em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1) if EMEHCS_FUNC_TABLE.key? y }
     if x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
-    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' then (@env[x[1..]] = pop_raise; em && @stack.push(x[1..]))
-    elsif x[0] == VARIABLE_DEF_PREFIX # 変数定義
-      pop = pop_raise
-      # (3) 変数定義のときは、Array を実行する
-      @env[x[1..]] = pop.is_a?(Array) && pop.last != :q ? parse_run(pop) : pop
-      em && @stack.push(x[1..]) # REPL に変数名を出力する
+    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' then @env[x[1..]] = pop_raise # 関数定義
+    elsif x[0] == VARIABLE_DEF_PREFIX # (3) 変数定義のときは、Array を実行する
+      pr = pop_raise; @env[x[1..]] = pr.is_a?(Array) && pr.last != :q ? parse_run(pr) : pr
     elsif @env[x].is_a?(Array)
       # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-      b = em && @env[x].last != :q
       b ? (@stack.push parse_run ConstB.deep_copy(@env[x])) : @stack.push(ConstB.deep_copy(@env[x]))
     else
       @stack.push @env[x] # ふつうの name
@@ -92,7 +84,6 @@ end
 # メイン関数としたもの
 if __FILE__ == $PROGRAM_NAME
   # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
-
   emehcs = EmehcsB.new
   p emehcs.parse_run([1, 2, 'true', '?'])
   # repl = Repl.new emehcs
