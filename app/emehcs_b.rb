@@ -27,7 +27,7 @@ class EmehcsBaseB
     values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    values.map! { |y| y.is_a?(Array) && y.last != :q ? parse_run(y) : y }
+    values.map! { |y| func?(y) ? parse_run(y) : y }
     count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
   end
 
@@ -63,22 +63,25 @@ class EmehcsB < EmehcsBaseB
 
   private
 
-  def parse_string(x, em, db = [x, @env[x]], b = em && @env[x].is_a?(Array) && @env[x].last != :q)
+  def parse_string(x, em, name = x[1..], db = [x, @env[x]], b = em && func?(@env[x]), co = ConstB.deep_copy(@env[x]))
+    # primitive関数 の実行
     db.each { |y| (em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1) if EMEHCS_FUNC_TABLE.key? y }
-    if x[-2..] == SPECIAL_STRING_SUFFIX then @stack.push x # 純粋文字列
-    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' then @env[x[1..]] = pop_raise # 関数定義
-    elsif x[0] == VARIABLE_DEF_PREFIX # (3) 変数定義のときは、Array を実行する
-      pr = pop_raise; @env[x[1..]] = pr.is_a?(Array) && pr.last != :q ? parse_run(pr) : pr
-    elsif @env[x].is_a?(Array)
-      # (2) name が Array を参照しているときも、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-      b ? (@stack.push parse_run ConstB.deep_copy(@env[x])) : @stack.push(ConstB.deep_copy(@env[x]))
-    else
-      @stack.push @env[x] # ふつうの name
+
+    if x[-2..] == SPECIAL_STRING_SUFFIX             # 純粋文字列 :s
+      @stack.push x
+    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' # 関数定義
+      @env[name] = pop_raise
+    elsif x[0] == VARIABLE_DEF_PREFIX               # (3) 変数定義のときは、Array を実行する
+      pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
+    elsif @env[x].is_a?(Array)                      # (2) この時も code の最後かつ関数なら実行する、でなければ積む
+      b ? @stack.push(parse_run(co)) : @stack.push(co)
+    else                                            # 関数・変数名
+      @stack.push @env[x]
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = (em && x.last != :q ? @stack.push(parse_run(x)) : @stack.push(x))
+  def parse_array(x, em) = (em && func?(x) ? @stack.push(parse_run(x)) : @stack.push(x))
 end
 
 # メイン関数としたもの
