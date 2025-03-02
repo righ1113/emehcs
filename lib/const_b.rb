@@ -3,7 +3,7 @@
 # ConstB モジュール
 module ConstB
   READLINE_HIST_FILE = './data/.readline_history'
-  PRELUDE_FILE       = './data/prelude.eme'
+  PRELUDE_FILE       = './data/prelude_b.eme'
   EMEHCS_VERSION     = 'emehcs version 0.2.0'
   EMEHCS_FUNC_TABLE  = {
     '+'      => :plus,

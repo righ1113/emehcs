@@ -13,7 +13,7 @@
 
 require './lib/const_b'
 require './lib/parse2_core'
-require './lib/repl'
+require './lib/repl_b'
 
 # EmehcsBaseB クラス
 class EmehcsBaseB
@@ -85,8 +85,8 @@ end
 if __FILE__ == $PROGRAM_NAME
   # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
   emehcs = EmehcsB.new
-  p emehcs.parse_run([1, 2, 'true', '?'])
-  # repl = Repl.new emehcs
-  # repl.prelude
-  # repl.repl
+  # p emehcs.parse_run([1, 2, 'true', '?'])
+  repl = ReplB.new emehcs
+  repl.prelude
+  repl.repl
 end
