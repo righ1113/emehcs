@@ -49,7 +49,7 @@ module ConstB
   def mul       = (@stack.push common(2).reduce(:*))
   def div       = (y1, y2 = common(2); @stack.push y2 / y1)
   def mod       = (y1, y2 = common(2); @stack.push y2 % y1)
-  def lt        = (y1, y2 = common(2); @stack.push(y2 < y1 ? 'true' : 'false'))
+  def lt        = (y1, y2 = common(2); @stack.push(y2 < y1  ? 'true' : 'false'))
   def eq        = (y1, y2 = common(2); @stack.push(y2 == y1 ? 'true' : 'false'))
   def ne        = (y1, y2 = common(2); @stack.push(y2 != y1 ? 'true' : 'false'))
   def s_append  = (y1, y2 = common(2); @stack.push y1[0..-3] + y2)
@@ -83,6 +83,23 @@ module ConstB
     # このようにして assert を使うことができます
     def self.assert(cond1, cond2, message = 'Assertion failed')
       raise "#{cond1} #{cond2} <#{message}>" unless cond1 == cond2
+    end
+  end
+
+  # 遅延評価
+  class Delay
+    def initialize(&func)
+      @func  = func
+      @flag  = false
+      @value = false
+    end
+
+    def force
+      unless @flag
+        @value = @func.call
+        @flag  = true
+      end
+      @value
     end
   end
 end

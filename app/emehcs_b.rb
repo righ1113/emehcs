@@ -55,7 +55,7 @@ class EmehcsB < EmehcsBaseB
       in String  then parse_string x, xs.empty?
       in Array   then parse_array  x, xs.empty?
       in Symbol  then nil # do nothing
-      else raise ERROR_MESSAGES[:unexpected_type]
+      else            raise ERROR_MESSAGES[:unexpected_type]
       end
       parse_run xs
     end
@@ -63,7 +63,8 @@ class EmehcsB < EmehcsBaseB
 
   private
 
-  def parse_string(x, em, name = x[1..], db = [x, @env[x]], b = em && func?(@env[x]), co = ConstB.deep_copy(@env[x]))
+  def parse_string(x, em, name = x[1..], db = [x, @env[x]], b = em && func?(@env[x]),
+                   co = Delay.new { ConstB.deep_copy(@env[x]) })
     # primitive関数 の実行
     db.each { |y| (em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1) if EMEHCS_FUNC_TABLE.key? y }
 
@@ -74,7 +75,7 @@ class EmehcsB < EmehcsBaseB
     elsif x[0] == VARIABLE_DEF_PREFIX               # (3) 変数定義のときは、Array を実行する
       pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
     elsif @env[x].is_a?(Array)                      # (2) この時も code の最後かつ関数なら実行する、でなければ積む
-      b ? @stack.push(parse_run(co)) : @stack.push(co)
+      b ? @stack.push(parse_run(co.force)) : @stack.push(co.force)
     else                                            # 関数・変数名
       @stack.push @env[x]
     end
