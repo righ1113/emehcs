@@ -69,15 +69,15 @@ class EmehcsB < EmehcsBaseB
     # primitive関数 の実行
     db.each { |y| (em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1) if EMEHCS_FUNC_TABLE.key? y }
 
-    if x[-2..] == SPECIAL_STRING_SUFFIX             # 純粋文字列 :s
+    if x[-2..] == SPECIAL_STRING_SUFFIX # 純粋文字列 :s
       @stack.push x
-    elsif x[0] == FUNCTION_DEF_PREFIX && x != '>>>' # 関数定義
+    elsif x[0] == FUNCTION_DEF_PREFIX   # 関数定義
       @env[name] = pop_raise
-    elsif x[0] == VARIABLE_DEF_PREFIX               # (3) 変数定義のときは、Array を実行する
+    elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
       pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
-    elsif @env[x].is_a?(Array)                      # (2) この時も code の最後かつ関数なら実行する、でなければ積む
+    elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
       b ? @stack.push(parse_run(co.force)) : @stack.push(co.force)
-    else                                            # 関数・変数名
+    else                                # 関数・変数名
       @stack.push @env[x]
     end
   end

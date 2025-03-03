@@ -40,9 +40,9 @@ class EmehcsTestB < Minitest::Test
   def test_case2
     emehcs = EmehcsB.new
     code22 = '[] [3] =='
-    code24 = '(>f >g (=x x g) f) >>>> 5 (5 +) (2 *) >>>'
+    code24 = '5 (5 +) (2 *)'
     code25 = '((4 3 false ?) 2 false ?) 1 false ?'
-    code26 = '(>f >g (=x x g) f) >>>> 5 ((5 +) (2 *) >>>) (3 -) >>>'
+    code26 = '5 (5 +) (2 *) (3 -)'
     code27 = '"aaa    aaa a   a"'
 
     assert_equal 'false',              (emehcs.run code22)
