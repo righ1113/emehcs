@@ -16,7 +16,7 @@ module ConstB
     '!='     => :ne,
     # 'true'   => :my_true,
     # 'false'  => :my_false,
-    # '&&'     => :my_and,
+    '&&'     => :my_and,
     'cons'   => :cons,
     's.++'   => :s_append,
     'sample' => :my_sample,
@@ -67,7 +67,7 @@ module ConstB
   def chr       = (@stack.push common(1).chr)
   def up_p      = (y1, y2, y3 = common(3); y3[y2] += y1; @stack.push y3)
   def index     = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
-  # def my_and    = (@stack.push common(2, 1).all? { |x| x == 'true' } ? 'true' : 'false')
+  def my_and    = my_if 2
 
   # pop_raise
   def pop_raise = (pr = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pr.nil?; pr)

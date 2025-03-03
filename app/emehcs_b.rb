@@ -31,12 +31,13 @@ class EmehcsBaseB
     count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
   end
 
-  # if
-  def my_if
-    values = Array.new(3) { @stack.pop }
+  # if と &&
+  def my_if(count = 3)
+    values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    @stack.push parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : parse_run([values[2]])
+    else_c = Delay.new { count == 3 ? parse_run([values[2]]) : 'false' }
+    @stack.push parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : else_c.force
   end
 end
 
@@ -89,7 +90,6 @@ end
 if __FILE__ == $PROGRAM_NAME
   # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
   emehcs = EmehcsB.new
-  # p emehcs.parse_run([1, 2, 'true', '?'])
   repl = ReplB.new emehcs
   repl.prelude
   repl.repl
