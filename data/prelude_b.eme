@@ -1,4 +1,4 @@
-(=x 1 (x 3 *) +) >3x+1                                     |
+((3 *) (1 +)) >3x+1                                        |
 (2 /) >x/2                                                 |
 
 (=d =m =x m (x d mod) ==) >modBase                         |
@@ -18,8 +18,6 @@
       (out2 ret cons) >oc
         (ic f oc map0) (out2 reverse) ([] inp ==) ?) >map0 |
 ([] map0) >map                                             |
-
-(>f >g g f) >>>>                                           |
 
 (=out =x =inp
   (out reverse) =o
