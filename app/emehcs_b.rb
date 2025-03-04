@@ -36,8 +36,8 @@ class EmehcsBaseB
     values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    else_c = Delay.new { count == 3 ? parse_run([values[2]]) : 'false' }
-    @stack.push parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : else_c.force
+    else_c = Delay.new { count == 3 ? parse_run([values[2]]) : @stack.push('false') }
+    parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : else_c.force
   end
 end
 
@@ -49,7 +49,7 @@ class EmehcsB < EmehcsBaseB
   # メインルーチンの改善
   def parse_run(code)
     case code
-    in [] then @stack.pop
+    in [] then @stack.last
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
@@ -76,14 +76,14 @@ class EmehcsB < EmehcsBaseB
     elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
       pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
     elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
-      @stack.push b ? parse_run(co.force) : co.force
+      b ? parse_run(co.force) : @stack.push(co.force)
     else                                # 関数・変数名
       @stack.push @env[x]
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = @stack.push(em && func?(x) ? parse_run(x) : x)
+  def parse_array(x, em) = em && func?(x) ? parse_run(x) : @stack.push(x)
 end
 
 # メイン関数としたもの
