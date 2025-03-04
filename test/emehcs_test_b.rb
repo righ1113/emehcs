@@ -23,18 +23,18 @@ class EmehcsTestB < Minitest::Test
     code11 = [[1, 2, 3, :q], 'id']
     code12 = [[1, 2, 3, :q], '=dat', 'dat', 'id']
 
-    assert_equal 3,                    (emehcs.parse_run code1)
-    assert_equal 11,                   (emehcs.parse_run code2)
-    assert_equal 12,                   (emehcs.parse_run code3)
-    assert_equal 99,                   (emehcs.parse_run code4)
-    assert_equal 9,                    (emehcs.parse_run code5)
-    assert_equal 4,                    (emehcs.parse_run code6)
-    assert_equal 5,                    (emehcs.parse_run code7)
-    assert_equal 1,                    (emehcs.parse_run code8)
-    assert_equal 24,                   (emehcs.parse_run code9)
-    assert_equal 120,                  (emehcs.parse_run code10)
-    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code11)
-    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code12)
+    assert_equal 3,                    (emehcs.parse_run code1,  false)
+    assert_equal 11,                   (emehcs.parse_run code2,  false)
+    assert_equal 12,                   (emehcs.parse_run code3,  false)
+    assert_equal 99,                   (emehcs.parse_run code4,  false)
+    assert_equal 9,                    (emehcs.parse_run code5,  false)
+    assert_equal 4,                    (emehcs.parse_run code6,  false)
+    assert_equal 5,                    (emehcs.parse_run code7,  false)
+    assert_equal 1,                    (emehcs.parse_run code8,  false)
+    assert_equal 24,                   (emehcs.parse_run code9,  false)
+    assert_equal 120,                  (emehcs.parse_run code10, false)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code11, false)
+    assert_equal [1, 2, 3, :q],        (emehcs.parse_run code12, false)
   end
 
   def test_case2

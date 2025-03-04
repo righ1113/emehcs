@@ -27,7 +27,7 @@ class EmehcsBaseB
     values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    values.map! { |y| func?(y) ? parse_run(y) : y }
+    values.map! { |y| func?(y) ? parse_run(y, false) : y }
     count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
   end
 
@@ -36,20 +36,20 @@ class EmehcsBaseB
     values = Array.new(count) { @stack.pop }
     raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
 
-    else_c = Delay.new { count == 3 ? parse_run([values[2]]) : @stack.push('false') }
-    parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : else_c.force
+    else_c = Delay.new { count == 3 ? parse_run([values[2]], false) : @stack.push('false') }
+    parse_run([values[0]], false) == 'true' ? parse_run([values[1]], false) : else_c.force
   end
 end
 
 # EmehcsB クラス 相互に呼び合っているから、継承しかないじゃん
 class EmehcsB < EmehcsBaseB
   include Parse2Core
-  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
+  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code), false).to_s))
 
   # メインルーチンの改善
-  def parse_run(code)
+  def parse_run(code, pop_flg)
     case code
-    in [] then @stack.last
+    in [] then pop_flg ? @stack.pop : @stack.last
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
@@ -58,7 +58,7 @@ class EmehcsB < EmehcsBaseB
       in Symbol  then nil # do nothing
       else            raise ERROR_MESSAGES[:unexpected_type]
       end
-      parse_run xs
+      parse_run xs, pop_flg
     end
   end
 
@@ -74,16 +74,16 @@ class EmehcsB < EmehcsBaseB
     elsif x[0] == FUNCTION_DEF_PREFIX   # 関数定義
       @env[name] = pop_raise
     elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
-      pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
+      pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr, true) : pr
     elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
-      b ? parse_run(co.force) : @stack.push(co.force)
+      b ? parse_run(co.force, false) : @stack.push(co.force)
     else                                # 関数・変数名
       @stack.push @env[x]
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = em && func?(x) ? parse_run(x) : @stack.push(x)
+  def parse_array(x, em) = em && func?(x) ? parse_run(x, false) : @stack.push(x)
 end
 
 # メイン関数としたもの
