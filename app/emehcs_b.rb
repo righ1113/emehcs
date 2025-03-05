@@ -53,8 +53,8 @@ class EmehcsB < EmehcsBaseB
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
-      in String  then my_ack_push parse_string x, xs.empty?
       in Array   then @stack.push parse_array  x, xs.empty?
+      in String  then my_ack_push parse_string x, xs.empty?
       in Symbol  then nil # do nothing
       else            raise ERROR_MESSAGES[:unexpected_type]
       end
@@ -64,6 +64,10 @@ class EmehcsB < EmehcsBaseB
 
   private
 
+  # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
+  def parse_array(x, em) = em && func?(x) ? parse_run(x) : x
+
+  # String のとき
   def parse_string(x, em, name = x[1..], db = [x, @env[x]], b = em && func?(@env[x]),
                    co = Delay.new { ConstB.deep_copy(@env[x]) },
                    pr = Delay.new { pop_raise })
@@ -79,15 +83,12 @@ class EmehcsB < EmehcsBaseB
       @env[name] = pop_raise; nil
     elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
       @env[name] = func?(pr.force) ? parse_run(pr.force) : pr.force; nil
-    elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
+    elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する
       ________________________ = b ? parse_run(co.force) : co.force
     else                                # x が変数名
       @env[x]
     end
   end
-
-  # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = em && func?(x) ? parse_run(x) : x
 end
 
 # メイン関数としたもの
