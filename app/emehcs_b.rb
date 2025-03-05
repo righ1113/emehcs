@@ -44,7 +44,7 @@ end
 # EmehcsB クラス 相互に呼び合っているから、継承しかないじゃん
 class EmehcsB < EmehcsBaseB
   include Parse2Core
-  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code), false).to_s))
+  def run(str_code) = (@stack = []; run_after(trcall(parse_run(parse2_core(str_code), false)).to_s))
 
   # メインルーチンの改善
   def parse_run(code, pop_flg)

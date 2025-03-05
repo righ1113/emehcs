@@ -74,6 +74,11 @@ module ConstB
   # func?
   def func?(x)  = x.is_a?(Array) && x.last != :q
 
+  def trcall(value)
+    value = value.call while value.instance_of?(Proc)
+    value
+  end
+
   # ConstB クラス
   class ConstB
     def self.deep_copy(arr)
