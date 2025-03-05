@@ -55,7 +55,7 @@ module ConstB
   def s_append  = (y1, y2 = common(2); @stack.push y1[0..-3] + y2)
   def my_sample = (@stack.push common(1)[0..-2].sample)
   def error     = (@stack.push raise common(1).to_s[0..-3])
-  def car       = (y1 = common(1); z = y1[0..-2]; @stack.push z[0])
+  def car       = (@stack.push common(1)[0])
   def cdr       = (@stack.push common(1)[1..])
   def cons      = (y1, y2 = common(2); @stack.push y2.unshift(y1);)
   # def my_true   = my_true_false true
