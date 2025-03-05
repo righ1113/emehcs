@@ -48,6 +48,8 @@ class EmehcsB < EmehcsBaseB
 
   # メインルーチンの改善
   def parse_run(code, pop_flg)
+    # puts "Stack: #{@stack.inspect}"  # デバッグ出力を追加
+    # puts "Code:  #{code.inspect}"    # デバッグ出力を追加
     case code
     in [] then pop_flg ? @stack.pop : @stack.last
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった

@@ -3,9 +3,9 @@
 (=pro =i =stop =sign ={} =d
   (pro i !!) =pro_i
     ; 関数合成を二段階使っている
-      ((d (d sign -) (pro_i "}" ==) ?) (d sign +) (pro_i "{" ==) ?)
-        ({} sign stop (i sign +) pro #)
-          (("pro_edge" error) (i stop ==) ?) i ((d 0 ==) (pro_i {} ==) &&) ?) >#    |
+      ((d (d sign -) (pro_i "}" ==) ?) (d sign +) (pro_i "{" ==) ?) =d2
+        (d2 {} sign stop (i sign +) pro #) >rec
+          (rec ("pro_edge" error) (i stop ==) ?) i ((d 0 ==) (pro_i {} ==) &&) ?) >#    |
 
 (=out =pc =mem =mar =pro
   ((pro length) 1 -) =max
