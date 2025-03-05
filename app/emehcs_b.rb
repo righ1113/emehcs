@@ -53,8 +53,8 @@ class EmehcsB < EmehcsBaseB
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
-      in String  then parse_string x, xs.empty?
-      in Array   then parse_array  x, xs.empty?
+      in String  then my_ack_push parse_string x, xs.empty?
+      in Array   then @stack.push parse_array  x, xs.empty?
       in Symbol  then nil # do nothing
       else            raise ERROR_MESSAGES[:unexpected_type]
       end
@@ -65,25 +65,29 @@ class EmehcsB < EmehcsBaseB
   private
 
   def parse_string(x, em, name = x[1..], db = [x, @env[x]], b = em && func?(@env[x]),
-                   co = Delay.new { ConstB.deep_copy(@env[x]) })
-    # primitive関数 の実行
-    db.each { |y| (em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y); return 1) if EMEHCS_FUNC_TABLE.key? y }
-
+                   co = Delay.new { ConstB.deep_copy(@env[x]) },
+                   pr = Delay.new { pop_raise })
+    db.each do |y|
+      if EMEHCS_FUNC_TABLE.key? y       # primitive関数 の実行
+        em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y)
+        return nil
+      end
+    end
     if x[-2..] == SPECIAL_STRING_SUFFIX # 純粋文字列 :s
-      @stack.push x
+      x
     elsif x[0] == FUNCTION_DEF_PREFIX   # 関数定義
-      @env[name] = pop_raise
+      @env[name] = pop_raise; nil
     elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
-      pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr) : pr
+      @env[name] = func?(pr.force) ? parse_run(pr.force) : pr.force; nil
     elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
-      @stack.push b ? parse_run(co.force) : co.force
-    else                                # 関数・変数名
-      @stack.push @env[x]
+      ________________________ = b ? parse_run(co.force) : co.force
+    else                                # x が変数名
+      @env[x]
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = @stack.push(em && func?(x) ? parse_run(x) : x)
+  def parse_array(x, em) = em && func?(x) ? parse_run(x) : x
 end
 
 # メイン関数としたもの

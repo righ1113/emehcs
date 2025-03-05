@@ -70,9 +70,11 @@ module ConstB
   def my_and    = my_if 2
 
   # pop_raise
-  def pop_raise = (pr = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pr.nil?; pr)
+  def pop_raise      = (pr = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pr.nil?; pr)
   # func?
-  def func?(x)  = x.is_a?(Array) && x.last != :q
+  def func?(x)       = x.is_a?(Array) && x.last != :q
+  # my_push
+  def my_ack_push(x) = x.nil? ? nil : @stack.push(x)
 
   # ConstB クラス
   class ConstB

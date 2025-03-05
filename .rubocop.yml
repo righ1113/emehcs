@@ -50,7 +50,7 @@ Metrics/BlockNesting:
   Max: 4
 
 Metrics/ParameterLists:
-  Max: 6
+  Max: 7
   CountKeywordArgs: false
   CountParameters: false
   MaxOptionalParameters: 5
