@@ -4,7 +4,7 @@
 module ConstB
   READLINE_HIST_FILE = './data/.readline_history'
   PRELUDE_FILE       = './data/prelude_b.eme'
-  EMEHCS_VERSION     = 'emehcs version 0.2.0'
+  EMEHCS_VERSION     = 'emehcs version 0.2.1'
   EMEHCS_FUNC_TABLE  = {
     '+'      => :plus,
     '-'      => :minus,
@@ -68,6 +68,14 @@ module ConstB
   def up_p      = (y1, y2, y3 = common(3); y3[y2] += y1; @stack.push y3)
   def index     = (y1, y2 = common(2); @stack.push y2.is_a?(Array) ? y2[y1] : "#{y2[y1]}#{SPECIAL_STRING_SUFFIX}")
   def my_and    = my_if 2
+
+  # init_common
+  def init_common(count)
+    values = Array.new(count) { @stack.pop }
+    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
+
+    values
+  end
 
   # pop_raise
   def pop_raise      = (pr = @stack.pop; raise ERROR_MESSAGES[:insufficient_args] if pr.nil?; pr)

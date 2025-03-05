@@ -23,19 +23,15 @@ class EmehcsBaseB
   private
 
   # スタックから count 個の要素を取り出して、評価する(実際に値を使用する前段階)
-  def common(count = 1)
-    values = Array.new(count) { @stack.pop }
-    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
-
+  def common(count)
+    values = init_common count
     values.map! { |y| func?(y) ? parse_run(y) : y }
-    count == 1 ? values.first : values # count が 1 なら最初の要素を、そうでなければ配列全体を返す
+    count == 1 ? values.first : values # count が 1 なら最初の要素を返す
   end
 
   # if と &&
   def my_if(count = 3)
-    values = Array.new(count) { @stack.pop }
-    raise ERROR_MESSAGES[:insufficient_args] if values.any?(&:nil?)
-
+    values = init_common count
     else_c = Delay.new { count == 3 ? parse_run([values[2]]) : 'false' }
     @stack.push parse_run([values[0]]) == 'true' ? parse_run([values[1]]) : else_c.force
   end
