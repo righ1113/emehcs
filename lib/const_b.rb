@@ -84,6 +84,15 @@ module ConstB
   # my_push
   def my_ack_push(x) = x.nil? ? nil : @stack.push(x)
 
+  # trcall
+  def trcall(value)
+    while value.instance_of?(Proc)
+      p value
+      value = value.call
+    end
+    value
+  end
+
   # ConstB クラス
   class ConstB
     def self.deep_copy(arr)

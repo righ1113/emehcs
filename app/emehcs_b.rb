@@ -40,7 +40,7 @@ end
 # EmehcsB クラス 相互に呼び合っているから、継承しかないじゃん
 class EmehcsB < EmehcsBaseB
   include Parse2Core
-  def run(str_code) = (@stack = []; run_after(parse_run(parse2_core(str_code)).to_s))
+  def run(str_code) = (@stack = []; run_after(trcall(parse_run(parse2_core(str_code))).to_s))
 
   # メインルーチンの改善
   def parse_run(code)
@@ -54,7 +54,7 @@ class EmehcsB < EmehcsBaseB
 
         @stack.push parse_array x, false
       in String
-        return parse_string x, true if xs.empty?
+        return proc { parse_string x, true } if xs.empty?
 
         my_ack_push parse_string x, false
       in Symbol then nil # do nothing
