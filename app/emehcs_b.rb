@@ -49,10 +49,16 @@ class EmehcsB < EmehcsBaseB
     in [x, *xs] # each_with_index 使ったら、再帰がよけい深くなった
       case x
       in Integer then @stack.push x
-      in Array   then @stack.push parse_array  x, xs.empty?
-      in String  then my_ack_push parse_string x, xs.empty?
-      in Symbol  then nil # do nothing
-      else            raise ERROR_MESSAGES[:unexpected_type]
+      in Array
+        return parse_array x, true if xs.empty?
+
+        @stack.push parse_array x, false
+      in String
+        return parse_string x, true if xs.empty?
+
+        my_ack_push parse_string x, false
+      in Symbol then nil # do nothing
+      else raise ERROR_MESSAGES[:unexpected_type]
       end
       parse_run xs
     end
@@ -70,7 +76,7 @@ class EmehcsB < EmehcsBaseB
     db.each do |y|
       if EMEHCS_FUNC_TABLE.key? y       # primitive関数 の実行
         em ? send(EMEHCS_FUNC_TABLE[y]) : @stack.push(y)
-        return nil
+        return @stack.pop
       end
     end
     if x[-2..] == SPECIAL_STRING_SUFFIX # 純粋文字列 :s
