@@ -60,7 +60,7 @@ class EmehcsB < EmehcsBaseB
       in Symbol  then nil # do nothing
       else            raise ERROR_MESSAGES[:unexpected_type]
       end
-      parse_run xs, pop_flg
+      proc { parse_run xs, pop_flg }
     end
   end
 
@@ -78,14 +78,14 @@ class EmehcsB < EmehcsBaseB
     elsif x[0] == VARIABLE_DEF_PREFIX   # (3) 変数定義のときは、Array を実行する
       pr = pop_raise; @env[name] = func?(pr) ? parse_run(pr, true) : pr
     elsif @env[x].is_a?(Array)          # (2) この時も code の最後かつ関数なら実行する、でなければ積む
-      b ? parse_run(co.force, false) : @stack.push(co.force)
+      b ? proc { parse_run(co.force, false) } : @stack.push(co.force)
     else                                # 関数・変数名
       @stack.push @env[x]
     end
   end
 
   # (1) Array のとき、code の最後かつ関数だったら実行する、でなければ実行せずに積む
-  def parse_array(x, em) = em && func?(x) ? parse_run(x, false) : @stack.push(x)
+  def parse_array(x, em) = em && func?(x) ? proc { parse_run(x, false) } : @stack.push(x)
 end
 
 # メイン関数としたもの
