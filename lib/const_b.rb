@@ -84,13 +84,24 @@ module ConstB
   # my_push
   def my_ack_push(x) = x.nil? ? nil : @stack.push(x)
 
-  # trcall
+  # 仮 trcall
   def trcall(value)
     while value.instance_of?(Proc)
       p value
       value = value.call
     end
     value
+  end
+
+  # 仮 pop_proc
+  def pop_proc
+    pr = @stack.pop
+    raise 'hoge1' if pr.nil?
+
+    pr = pr.call while pr.instance_of?(Proc)
+    raise 'hoge2' if pr.nil?
+
+    pr
   end
 
   # ConstB クラス

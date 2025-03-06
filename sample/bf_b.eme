@@ -2,17 +2,17 @@
 
 (=pro =i =stop =sign ={} =d
   (pro i !!) =pro_i
-    ; 関数合成を二段階使っている
-      ((d (d sign -) (pro_i "}" ==) ?) (d sign +) (pro_i "{" ==) ?)
-        ({} sign stop (i sign +) pro #)
-          (("pro_edge" error) (i stop ==) ?) i ((d 0 ==) (pro_i {} ==) &&) ?) >#    |
+    ; 関数合成を二段階使っている、いややめた
+      ((d (d sign -) (pro_i "}" ==) ?) (d sign +) (pro_i "{" ==) ?) =d2
+        (d2 {} sign stop (i sign +) pro #) >rec
+          (rec ("pro_edge" error) (i stop ==) ?) i ((d 0 ==) (pro_i {} ==) &&) ?) >#    |
 
 (=out =pc =mem =mar =pro
   ((pro length) 1 -) =max
     (pro pc !!) =op
       (0 "{" -1 0  (pc 1 -) pro #) >move_pc2
         (0 "}" 1 max (pc 1 +) pro #) >move_pc1
-          (pro mar mem (pc 1 +) out bf0 (out reverse) (pc max ==) ?) >^
+          ((pro mar mem (pc 1 +) out bf0) (out reverse) (pc max ==) ?) >^
             ((((((^ (move_pc2 =pc ^) (((mem mar !!) 0 !=) (op "}" ==) &&) ?)
                     (move_pc1 =pc ^) (((mem mar !!) 0 ==) (op "{" ==) &&) ?)
                 ((out ((mem mar !!) chr) cons)  =out ^) (op "." ==) ?)
