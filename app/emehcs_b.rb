@@ -9,6 +9,7 @@
 # ・実行方法
 # $ cd emehcs
 # $ bundle exec ruby app/emehcs_b.rb
+# or $ RUBY_THREAD_VM_STACK_SIZE=100000000 bundle exec ruby app/emehcs_b.rb
 # > [ctrl]+D か exit で終了
 
 require './lib/const_b'
@@ -89,7 +90,6 @@ end
 
 # メイン関数としたもの
 if __FILE__ == $PROGRAM_NAME
-  # exec({ 'RUBY_THREAD_VM_STACK_SIZE' => '1000000000' }, '/usr/bin/ruby', $0)
   emehcs = EmehcsB.new
   repl = ReplB.new emehcs
   repl.prelude
