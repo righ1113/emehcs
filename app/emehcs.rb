@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 # ・以下は1回だけおこなう
-# rbenv で Ruby 3.2.2(じゃなくてもいい) を入れる
+# rbenv で Ruby 3.4.7(じゃなくてもいい) を入れる
 # $ gem install bundler
 # $ cd emehcs
-# $ bundle install --path=vendor/bundle
+# $ bundle config set path 'vendor/bundle'
+# $ bundle install
 
 # ・実行方法
 # $ cd emehcs

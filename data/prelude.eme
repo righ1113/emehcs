@@ -34,4 +34,6 @@
   (step stop (start step +) (out start cons) cDiff0)
     (out reverse)
       (stop start <)) >cDiff0                            |
-([] cDiff0) >cDiff
+([] cDiff0) >cDiff                                       |
+
+(=c =x =d d x (c d ==)) >sdo
