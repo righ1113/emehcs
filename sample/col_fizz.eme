@@ -15,7 +15,7 @@
         ((x x/2) rec) >ev
           od ev (x even?) xc (x 2 <)) >collatz                                |
 
-(=x (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) (x "" sdo)) >fb      |
+(=x (("" "Buzz" (x 0mod5?)) ("" "Fizz" (x 0mod3?)) s.++) x "" sdo) >fb        |
 
 5 [] collatz                                                                  |
 (1 30 1 cDiff) fb map
